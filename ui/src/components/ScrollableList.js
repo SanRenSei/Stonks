@@ -11,7 +11,7 @@ export default {
         {items.map((i,x) => {
             return <li class="list-group-item" 
               onmousedown={()=>{
-                clickOption(x);
+                clickOption(i);
               }}>
               {i}
             </li>

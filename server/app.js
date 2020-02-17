@@ -36,14 +36,14 @@ app.get('/alpha_vantage/symbols/:symbol', (req, res) => {
   try {
     var fileData = fs.readFileSync(`data/daily/${symbol}.csv`, 'utf8').toString();
     console.log(fileData);
-    res.send(`"${fileData.trim()}"`);
+    res.send(JSON.stringify(fileData.trim().split('\n'))); 
   } catch (err) {
     // File not exists
     res.status(500).send("File does not exist!");
   }
 });
 
-app.post('/alpha_vantage/symbols/mine/:symbol', (req, res) => {
+app.post('/alpha_vantage/symbols/:symbol/mine', (req, res) => {
   var {symbol} = req.params;
   var url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${symbol}&apikey=${config.alphaVantage.apiKey}&outputsize=full`;
   var filePath = `data/daily/${symbol}.csv`;
@@ -74,11 +74,11 @@ app.post('/alpha_vantage/symbols/mine/:symbol', (req, res) => {
         }
       });
       fs.writeFileSync(filePath, fileLines.join('\n'));
-      res.send('OK');
+      res.send(JSON.stringify(fileLines));
     } catch (err) {
       // File not exists
       fs.writeFileSync(filePath, fileLines.join('\n'));
-      res.send('OK');
+      res.send(JSON.stringify(fileLines));
     }
     
   }).catch(err => {

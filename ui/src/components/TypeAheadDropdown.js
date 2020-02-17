@@ -1,11 +1,12 @@
 var m = require('mithril');
+var prop = require('mithril/stream');
 
 import ScrollableList from './ScrollableList';
 
 export default (vnode) => {
   
-  var focused = false;
-  var text = '';
+  var focused = prop(false);
+  var text = prop('');
   
   const filteredItems = (items, filter) => {
     return items.filter(item => {
@@ -15,31 +16,39 @@ export default (vnode) => {
   
   return {
     view: (vnode) => {
-      var {items} = vnode.attrs;
+      var {items, actions, onAction} = vnode.attrs;
+      actions = actions || [];
+      
+      var actionButtons = (
+         <div class="input-group-append">
+         {actions.map(action => {
+             return <button class="btn btn-outline-secondary" type="button"
+             onclick = {evt => onAction(action, text())}>
+               {action}
+             </button>
+         })}
+         </div>
+      );
+      
       return (
-        <div class="col-sm-3" style={{margin:'1em'}}>
+        <div class="col-sm-5" style={{margin:'1em'}}>
           <div class="input-group">
             <input type="text" class="form-control" 
               placeholder="Security Symbol" 
               oninput = {(evt) => {
-                text = evt.target.value.toUpperCase();
+                text(evt.target.value.toUpperCase());
               }}
               onfocus = {() => {
-                focused = true;
+                focused(true);
               }}
               onfocusout = {() => {
-                focused = false;
+                focused(false);
               }}
-              value = {text}
+              value = {text()}
             />
-            <div class="input-group-append">
-              <button class="btn btn-outline-secondary" type="button">View</button>
-              <button class="btn btn-outline-secondary" type="button">Update</button>
-            </div>
+            {actionButtons}
           </div>
-          {(focused && <ScrollableList items={filteredItems(items,text)} clickOption={(x)=>{
-            text = items[x];
-          }} />)}
+          {(focused() && <ScrollableList items={filteredItems(items,text())} clickOption={text} />)}
         </div>);
     }
   };
