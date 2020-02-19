@@ -6,6 +6,9 @@ const fs = require('fs');
 
 var config = require('./config.json');
 
+var startup = require('./startup.js');
+var autominer = require('./scripts/autominer.js');
+
 const app = express();
 bb.extend(app, {
   upload: true,
@@ -88,6 +91,9 @@ app.post('/alpha_vantage/symbols/:symbol/mine', (req, res) => {
 
 });
 
+
+startup();
+setInterval(autominer, 1000*60*6); // Every 6 minutes
 
 app.listen(60001, function(){
   console.log(`Listening on port: 60001`);
