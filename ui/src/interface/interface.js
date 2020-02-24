@@ -53,6 +53,20 @@ export default {
       });
       cb(data);      
     });
+  },
+  
+  searchAll: (body, cb) => {
+    m.request({
+      method: "POST",
+      url: `${env[props.env].baseUrl}/indicators/daily/search`,
+      body
+    })
+    .then((data) => {
+      data = data.map(l => {
+        return l.split(';');
+      });
+      cb(data);      
+    });
   }
 
 }
