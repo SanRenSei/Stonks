@@ -4,40 +4,58 @@ var prop = require('mithril/stream');
 import api from '../interface/interface';
 
 import FilterList from './FilterList';
+import IndicatorList from './IndicatorList';
 
 export default (vnode) => {
   
-  var data = prop([]);
+  var data = prop({
+    results: []
+  });
   var filters = prop([]);
-  
-  var searchPayload = {
-    indicator: {
-      type : "price"
-    },
-    filter : {
-      indicator: {
-        type : "price"
-      },
-      high:10
-    }
-  };
+  var queries = prop([]);
   
   return {
     
     view: () => {
       return (
       <div>
-        <FilterList />
+        <FilterList 
+          filterList={filters}
+        />
+        <br />
+        <IndicatorList 
+          indicatorList={queries}
+        />
         <br />
         <button type="button" class="btn btn-primary"
           onclick={() => {
-            api.searchAll(searchPayload, data);
+            var searchPayload = {
+              indicators: queries(),
+              filters:filters()
+            };
+            api.searchAll(searchPayload);
           }}
-        >Get Data!</button>
-        {data().map(dr => {
+        >Search!</button>
+        <button type="button" class="btn btn-primary"
+          onclick={() => {
+            api.searchResults(d => {
+              data(d);
+              filters(d.currentSearch.filters);
+              queries(d.currentSearch.indicators);
+            });
+          }}
+        >Update Search Results</button>
+        <br />
+        <br />
+        {data().progress && <div class="progress">
+          <div class="progress-bar" role="progressbar"
+            style={`width: ${data().progress*100}%`}
+          >{`${Math.floor(data().progress*100)}%`}</div>
+        </div>}
+        <br />
+        {data().results.map(dr => {
           return <tr>
-            <td>{dr[0]}</td>
-            <td>{dr[1]}</td>
+            {dr.map(dc => <td>{dc}</td>)}
           </tr>
         })}
       </div>

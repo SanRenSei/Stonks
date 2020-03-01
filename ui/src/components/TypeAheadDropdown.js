@@ -16,7 +16,9 @@ export default (vnode) => {
   
   return {
     view: (vnode) => {
-      var {items, actions, onAction} = vnode.attrs;
+      var {items, actions, onAction, placeholder, onchange} = vnode.attrs;
+      placeholder = placeholder || 'Security Symbol';
+      onchange = onchange || (() => {});
       actions = actions || [];
       
       var actionButtons = (
@@ -34,9 +36,10 @@ export default (vnode) => {
         <div class="col-sm-5" style={{margin:'1em'}}>
           <div class="input-group">
             <input type="text" class="form-control" 
-              placeholder="Security Symbol" 
+              placeholder={placeholder}
               oninput = {(evt) => {
                 text(evt.target.value.toUpperCase());
+                onchange(text());
               }}
               onfocus = {() => {
                 focused(true);
@@ -48,7 +51,13 @@ export default (vnode) => {
             />
             {actionButtons}
           </div>
-          {(focused() && <ScrollableList items={filteredItems(items,text())} clickOption={text} />)}
+          {(focused() && <ScrollableList 
+            items={filteredItems(items,text())} 
+            clickOption={(item) => {
+              text(item);
+              onchange(item);
+            }} 
+          />)}
         </div>);
     }
   };

@@ -1,7 +1,7 @@
 var m = require('mithril');
 var prop = require('mithril/stream');
 
-import IndicatorFilter from './IndicatorFilter';
+import IndicatorSelect from './IndicatorSelect';
 
 export default (vnode) => {
   
@@ -10,23 +10,23 @@ export default (vnode) => {
   return {
     
     view: (vnode) => {
-      var {filterList} = vnode.attrs;
+      var {indicatorList} = vnode.attrs;
       return (
       <div>
       
         <br />
         <button type="button" class="btn btn-primary"
           onclick={() => {
-            filterList().push({});
+            indicatorList().push({});
           }}
-        >Add New Filter</button>
+        >Add New Indicator</button>
         
         <br />
         
-        {filterList().map((f,i) => {
-          return <IndicatorFilter 
-            filterObj={f}
-            onchange={newObj => filterList()[i]=newObj}
+        {indicatorList().map((f,i) => {
+          return <IndicatorSelect 
+            indicatorObj={f}
+            onchange={newObj => indicatorList()[i]=newObj}
           />
         })}
         
