@@ -14,7 +14,7 @@ export default (vnode) => {
         <TypeAheadDropdown 
           items={['OPEN', 'LOW', 'HIGH', 'CLOSE', 'PRICE']}
           placeholder="Indicator"
-          onchange={ind => onchange({type:ind})}
+          onchange={onchange}
         />
         
       </div>

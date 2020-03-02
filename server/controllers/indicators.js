@@ -1,43 +1,28 @@
 
 const fs = require('fs');
 
+const hilbert = require('../hilbert/runtime');
+
 var searchFilters = [];
 var searchIndicators = [];
 var searchFiles = [];
 var searchIndex = 0;
 var searchResults = [];
 
-var computeIndicator = (indicator, file) => {
-  var {type} = indicator;
-  type = type.toLowerCase();
-  if (type == 'open') {
-    return file.split('\n')[0].split(';')[1];
-  }
-  if (type == 'low') {
-    return file.split('\n')[0].split(';')[2];
-  }
-  if (type == 'high') {
-    return file.split('\n')[0].split(';')[3];
-  }
-  if (type == 'close') {
-    return file.split('\n')[0].split(';')[4];
-  }
-  if (type == 'price') {
-    return file.split('\n')[0].split(';')[4];
-  }
-  if (type == 'volume') {
-    return file.split('\n')[0].split(';')[5];
-  }
-  return 0;
+var computeIndicator = (indicator) => {
+  return hilbert.compute(indicator);
 };
 
-var checkFilter = (filter, file) => {
+var checkFilter = (filter) => {
   var {indicator, low, high} = filter;
-  var indicatorVal = computeIndicator(indicator, file);
+  var indicatorVal = computeIndicator(indicator);
   if (low && indicatorVal < low) {
     return false;
   }
   if (high && indicatorVal > high) {
+    return false;
+  }
+  if (!low && !high && indicatorVal==0) {
     return false;
   }
   return true;
@@ -45,15 +30,15 @@ var checkFilter = (filter, file) => {
 
 var searchNextFile = () => {
   var fileName = searchFiles[searchIndex];
-  var fileData = fs.readFileSync(`data/daily/${fileName}`, 'utf8');
-  
+  hilbert.hoistFile(`data/daily/${fileName}`);
+    
   var filterMatch = !(searchFilters.filter(filter => {
-    return !checkFilter(filter, fileData);
+    return !checkFilter(filter);
   }).length>0);
   
   if (filterMatch) {
     var indicatorStr = searchIndicators.map(indicator => {
-      return computeIndicator(indicator, fileData)
+      return computeIndicator(indicator)
     }).join(';');
     searchResults.push(`${fileName.split('.')[0]};${indicatorStr}`);
   }
@@ -77,7 +62,6 @@ module.exports = (app) => {
   
   app.post('/indicators/daily/search', (req, res) => {
     var {body} = req;
-    console.log(body);
     var {indicator, indicators, filter, filters} = body;
     searchFilters = filters || [];
     filter && searchFilters.push(filter);
@@ -91,7 +75,6 @@ module.exports = (app) => {
     searchIndex = 0;
     
     searchNextFile();
-    
     res.send("OK");
   });
   
