@@ -17,7 +17,7 @@ export default (vnode) => {
         <br />
         <button type="button" class="btn btn-primary"
           onclick={() => {
-            indicatorList().push({});
+            indicatorList().push(prop({}));
           }}
         >Add New Indicator</button>
         
@@ -25,8 +25,7 @@ export default (vnode) => {
         
         {indicatorList().map((f,i) => {
           return <IndicatorSelect 
-            indicatorObj={f}
-            onchange={newObj => indicatorList()[i]=newObj}
+            indicator={f}
           />
         })}
         

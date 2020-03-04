@@ -3,6 +3,8 @@ const requestify = require('requestify');
 const moment = require('moment');
 const fs = require('fs');
 
+const config = require('../config.json');
+
 module.exports = (app) => {
 
   app.get('/alpha_vantage/symbols', (req, res) => {

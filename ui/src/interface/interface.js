@@ -1,4 +1,5 @@
 var m = require('mithril');
+var prop = require('mithril/stream');
 
 var env = require('../../env.json');
 var props = require('../../properties.json');
@@ -70,6 +71,15 @@ export default {
     }).then((data) => {
       data.results = data.results.map(l => {
         return l.split(';');
+      });
+      data.currentSearch.filters = data.currentSearch.filters.map(f => {
+        f.indicator.type = prop(f.indicator.type);
+        f.indicator = prop(f.indicator);
+        return prop(f);
+      });
+      data.currentSearch.indicators = data.currentSearch.indicators.map(i => {
+        i.type = prop(i.type);
+        return prop(i);
       });
       cb(data);      
     });

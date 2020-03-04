@@ -12,6 +12,7 @@ export default (vnode) => {
   
   var symbolList = prop(['FB', 'AAPL', 'AMZN', 'NFLX', 'GOOGL', 'TSLA']);
   var data = prop([]);
+  var searchSymbol = prop('');
   
   return {
   
@@ -33,6 +34,7 @@ export default (vnode) => {
               api.mineSymbol(option, data);
             }
           }}
+          value={searchSymbol}
         />
         <br />
         

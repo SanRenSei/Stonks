@@ -10,7 +10,7 @@ var searchIndex = 0;
 var searchResults = [];
 
 var computeIndicator = (indicator) => {
-  return hilbert.compute(indicator);
+  return hilbert.compute(indicator.type);
 };
 
 var checkFilter = (filter) => {

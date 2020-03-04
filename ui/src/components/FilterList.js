@@ -17,16 +17,15 @@ export default (vnode) => {
         <br />
         <button type="button" class="btn btn-primary"
           onclick={() => {
-            filterList().push({});
+            filterList().push(prop({}));
           }}
         >Add New Filter</button>
         
         <br />
         
-        {filterList().map((f,i) => {
+        {filterList().map(f => {
           return <IndicatorFilter 
-            filterObj={f}
-            onchange={newObj => filterList()[i]=newObj}
+            filter={f}
           />
         })}
         

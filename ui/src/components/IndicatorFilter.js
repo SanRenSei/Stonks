@@ -1,4 +1,5 @@
 var m = require('mithril');
+var prop = require('mithril/stream');
 
 import IndicatorSelect from './IndicatorSelect';
 
@@ -7,24 +8,28 @@ export default (vnode) => {
   return {
     
     view: (vnode) => {
-      var {filterObj, onchange} = vnode.attrs;
+      var {filter} = vnode.attrs;
+      if (!(filter().indicator)) {
+        filter().indicator = prop({});
+      }
+      
       return (
       <div>
       
         <IndicatorSelect 
-          onchange={ind => onchange({...filterObj, indicator:ind})}
+          indicator={filter().indicator}
         />
         
         <input
-          value={filterObj.low}
+          value={filter().low}
           placeholder="Low"
-          oninput={evt => onchange({...filterObj, low:parseFloat(evt.target.value)})}
+          oninput={evt => filter().low = parseFloat(evt.target.value)}
         />
         
         <input 
-          value={filterObj.high}
+          value={filter().high}
           placeholder="High"
-          oninput={evt => onchange({...filterObj, high:parseFloat(evt.target.value)})}
+          oninput={evt => filter().high = parseFloat(evt.target.value)}
         />
         
       </div>
