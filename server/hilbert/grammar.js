@@ -5,24 +5,21 @@ module.exports = ohm.grammar(`
   
   Hilbert {
     Exp = CompExp
-      | Ind
+      | Func
+      | SoloInd
+      | number
       
     CompExp = Exp "<" Exp -- lt
       | Exp ">" Exp -- gt
       
-    Ind = Date
-      | Open
-      | Low
-      | High
-      | Close
-      | Volume
+    Func = Ind "[" number "]"
       
-    Date = "DATE"
-    Open = "OPEN"
-    Low = "LOW"
-    High = "HIGH"
-    Close = "CLOSE"
-    Volume = "VOLUME"
+    SoloInd = upper+
+    
+    Ind = upper+
+    
+    number = digit+
+      
   }
   
 `);
