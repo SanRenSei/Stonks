@@ -35,7 +35,14 @@ var hoistData = (data) => {
 
 var compute = (hilbertScript) => {
   if (grammar.match(hilbertScript).succeeded()) {
-    return semantics(grammar.match(hilbertScript)).eval();
+    try {
+      return semantics(grammar.match(hilbertScript)).eval();
+    } catch (e) {
+      console.log('ERROR WHILE COMPUTING INDICATOR');
+      console.log('SCRIPT: ' + JSON.stringify(hilbertScript));
+      console.log(e);
+      return NaN;
+    }
   } else {
     console.log('BAD GRAMMAR: ' + JSON.stringify(hilbertScript));
     return NaN;
