@@ -2,6 +2,26 @@
 const fs = require('fs');
 const grammar = require('./grammar');
 
+var vapply = (func, p1, p2) => {
+  if (!(p1 instanceof Array) && !(p2 instanceof Array)) {
+    return func(p1, p2);
+  }
+  if (p1 instanceof Array && !(p2 instanceof Array)) {
+    return p1.map(x => func(x, p2));
+  }
+  if (!(p1 instanceof Array) && p2 instanceof Array) {
+    return p2.map(x => func(p1, x));
+  }
+  if (p1 instanceof Array && p2 instanceof Array) {
+    var maxLen = Math.max(p1.length, p2.length);
+    var toReturn = [];
+    for (var i=0;i<maxLen;i++) {
+      toReturn.push(func(p1[i%p1.length], p2[i%p2.length]))
+    }
+    return toReturn;
+  }
+}
+
 var securityData = [];
 
 var baseIndicators = {
@@ -14,9 +34,11 @@ var baseIndicators = {
 };
 
 var definedIndicators = {
-  sma: 'ΣCLOSE[1:x0]/x0'
+  sma: {
+    defaults: [1,0],
+    hilbert: 'ΣCLOSE[1:x0+x1]/x0'
+  }
 };
-
 
 
 var actions = {
@@ -35,7 +57,10 @@ var actions = {
       if (!(paramVal instanceof Array)) {
         paramVal = [paramVal];
       }
-      var indicatorEvaluation = definedIndicators[indName];
+      while (paramVal.length < definedIndicators[indName].defaults.length) {
+        paramVal.push(definedIndicators[indName].defaults[paramVal.length]);
+      }
+      var indicatorEvaluation = definedIndicators[indName].hilbert;
       paramVal.forEach((p,i) => {
         indicatorEvaluation = indicatorEvaluation.replace(new RegExp(`x${i}`, 'g'), p);
       });
@@ -43,13 +68,20 @@ var actions = {
     }
     throw ('No indicator by name: ' + indName);
   },
+  Params: (p1, _, p3) => {
+    if (p1.eval().length==0) {
+      return p3.eval();
+    }
+    return [...p1.eval(), p3.eval()];
+  },
+  Decimal_dec: (left, _, right) => parseFloat(left.sourceString + "." + right.sourceString),
   number: digits => parseInt(digits.sourceString),
   CompExp_lt: (left, _, right) => left.eval() < right.eval(),
   CompExp_gt: (left, _, right) => left.eval() > right.eval(),
-  MultExp_times: (left, _, right) => left.eval() * right.eval(),
-  MultExp_div: (left, _, right) => left.eval() / right.eval(),
-  AddExp_plus: (left, _, right) => left.eval() + right.eval(),
-  AddExp_minus: (left, _, right) => left.eval() - right.eval(),
+  MultExp_times: (left, _, right) => vapply((a, b) => a*b, left.eval(), right.eval()),
+  MultExp_div: (left, _, right) => vapply((a, b) => a/b, left.eval(), right.eval()),
+  AddExp_plus: (left, _, right) => vapply((a, b) => a+b, left.eval(), right.eval()),
+  AddExp_minus: (left, _, right) => vapply((a, b) => a-b, left.eval(), right.eval()),
   ArrExp: (left, _, right) => {
     var toReturn = [];
     var min = left.eval(), max = right.eval();
@@ -111,6 +143,10 @@ var test = () => {
   console.log(compute('ΣCLOSE[1:5]'));
   console.log(compute('ΣCLOSE[1:5]/5'));
   console.log(compute('SMA[5]'));
+  console.log(compute('CLOSE[1:5]'));
+  console.log(compute('1:5+2'));
+  console.log(compute('SMA[10]'));
+  console.log(compute('SMA[10,5]'));
 };
 
 test();

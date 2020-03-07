@@ -21,12 +21,14 @@ module.exports = ohm.grammar(`
     PriExp = Func
       | SoloInd
       | ArrExp
-      | number
+      | Decimal
       
     ArrExp = number ":" number
       
     Func = Summation 
-      | Ind "[" PriExp "]" -- func
+      | Ind "[" Params "]" -- func
+      
+    Params = (Exp ",")* Exp
       
     SoloInd = upper+
     
@@ -34,6 +36,8 @@ module.exports = ohm.grammar(`
     
     Ind = upper+
     
+    Decimal = digit+ "." digit+ -- dec
+      | number
     number = digit+
       
   }
