@@ -13,12 +13,53 @@ var baseIndicators = {
   volume: (offset = 0) => parseInt(securityData[offset][5])
 };
 
+var definedIndicators = {
+  sma: 'ΣCLOSE[1:x0]/x0'
+};
+
+
+
 var actions = {
   SoloInd: ind => baseIndicators[ind.sourceString.toLowerCase()](),
-  Func: (ind,_,param,__) => baseIndicators[ind.sourceString.toLowerCase()](param.eval()),
+  Func_func: (ind,_,param,__) => {
+    var indName = ind.sourceString.toLowerCase();
+    var paramVal = param.eval();
+    if (baseIndicators[indName]) {
+      if (paramVal instanceof Array) {
+        return paramVal.map(p => baseIndicators[indName](p));
+      } else {
+        return baseIndicators[indName](paramVal);
+      }
+    }
+    if (definedIndicators[indName]) {
+      if (!(paramVal instanceof Array)) {
+        paramVal = [paramVal];
+      }
+      var indicatorEvaluation = definedIndicators[indName];
+      paramVal.forEach((p,i) => {
+        indicatorEvaluation = indicatorEvaluation.replace(new RegExp(`x${i}`, 'g'), p);
+      });
+      return compute(indicatorEvaluation);
+    }
+    throw ('No indicator by name: ' + indName);
+  },
   number: digits => parseInt(digits.sourceString),
   CompExp_lt: (left, _, right) => left.eval() < right.eval(),
-  CompExp_gt: (left, _, right) => left.eval() > right.eval()
+  CompExp_gt: (left, _, right) => left.eval() > right.eval(),
+  MultExp_times: (left, _, right) => left.eval() * right.eval(),
+  MultExp_div: (left, _, right) => left.eval() / right.eval(),
+  AddExp_plus: (left, _, right) => left.eval() + right.eval(),
+  AddExp_minus: (left, _, right) => left.eval() - right.eval(),
+  ArrExp: (left, _, right) => {
+    var toReturn = [];
+    var min = left.eval(), max = right.eval();
+    while (min <= max) {
+      toReturn.push(min);
+      min++;
+    }
+    return toReturn;
+  },
+  Summation: (_, arr) => arr.eval().reduce((s,v) => s+v)
 };
 
 var semantics = grammar.createSemantics();
@@ -59,6 +100,19 @@ var test = () => {
   console.log(compute('OPEN[1]>OPEN[0]'));
   console.log(compute('OPEN[1]>300'));
   console.log(compute('OPEN[1]<300'));
+  console.log(compute('OPEN[1]+OPEN[2]'));
+  console.log(compute('OPEN[1]*OPEN[2]'));
+  console.log(compute('1-2-3'));
+  console.log(compute('1+4>2*2'));
+  console.log(compute('1+4<2*2'));
+  console.log(compute('3/2'));
+  console.log(compute('1:5'));
+  console.log(compute('Σ1:5'));
+  console.log(compute('ΣCLOSE[1:5]'));
+  console.log(compute('ΣCLOSE[1:5]/5'));
+  console.log(compute('SMA[5]'));
 };
+
+test();
 
 module.exports = {compute, hoistFile, hoistData};

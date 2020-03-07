@@ -5,16 +5,32 @@ module.exports = ohm.grammar(`
   
   Hilbert {
     Exp = CompExp
-      | Func
+      
+    CompExp = AddExp "<" AddExp -- lt
+      | AddExp ">" AddExp -- gt
+      | AddExp
+      
+    AddExp = AddExp "+" MultExp -- plus
+      | AddExp "-" MultExp -- minus
+      | MultExp
+      
+    MultExp = MultExp "*" PriExp -- times
+      | MultExp "/" PriExp -- div
+      | PriExp
+      
+    PriExp = Func
       | SoloInd
+      | ArrExp
       | number
       
-    CompExp = Exp "<" Exp -- lt
-      | Exp ">" Exp -- gt
+    ArrExp = number ":" number
       
-    Func = Ind "[" number "]"
+    Func = Summation 
+      | Ind "[" PriExp "]" -- func
       
     SoloInd = upper+
+    
+    Summation = "Σ" PriExp
     
     Ind = upper+
     
