@@ -23,9 +23,12 @@ export default (vnode) => {
         
         <br />
         
-        {filterList().map(f => {
+        {filterList().map((f,i) => {
           return <IndicatorFilter 
             filter={f}
+            remove={() => {
+              filterList().splice(i,1);
+            }}
           />
         })}
         

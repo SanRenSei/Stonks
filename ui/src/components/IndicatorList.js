@@ -26,6 +26,9 @@ export default (vnode) => {
         {indicatorList().map((f,i) => {
           return <IndicatorSelect 
             indicator={f}
+            remove={() => {
+              indicatorList().splice(i,1);
+            }}
           />
         })}
         

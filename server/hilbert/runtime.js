@@ -23,14 +23,19 @@ var vapply = (func, p1, p2) => {
 }
 
 var securityData = [];
+var globalOffset = 0;
+
+var setGlobalOffset = (i) => {
+  globalOffset = i;
+}
 
 var baseIndicators = {
-  date: (offset = 0) => parseInt(securityData[offset][0]),
-  open: (offset = 0) => parseFloat(securityData[offset][1]),
-  low: (offset = 0) => parseFloat(securityData[offset][2]),
-  high: (offset = 0) => parseFloat(securityData[offset][3]),
-  close: (offset = 0) => parseFloat(securityData[offset][4]),
-  volume: (offset = 0) => parseInt(securityData[offset][5])
+  date: (offset = 0) => parseInt(securityData[offset+globalOffset][0]),
+  open: (offset = 0) => parseFloat(securityData[offset+globalOffset][1]),
+  low: (offset = 0) => parseFloat(securityData[offset+globalOffset][2]),
+  high: (offset = 0) => parseFloat(securityData[offset+globalOffset][3]),
+  close: (offset = 0) => parseFloat(securityData[offset+globalOffset][4]),
+  volume: (offset = 0) => parseInt(securityData[offset+globalOffset][5])
 };
 
 var definedIndicators = {
@@ -74,7 +79,9 @@ var actions = {
     }
     return [...p1.eval(), p3.eval()];
   },
+  Decimal_neg: (_, digits) => -parseInt(digits.sourceString),
   Decimal_dec: (left, _, right) => parseFloat(left.sourceString + "." + right.sourceString),
+  Decimal_neg_dec: (_, left, __, right) => -parseFloat(left.sourceString + "." + right.sourceString),
   number: digits => parseInt(digits.sourceString),
   CompExp_lt: (left, _, right) => left.eval() < right.eval(),
   CompExp_gt: (left, _, right) => left.eval() > right.eval(),
@@ -149,6 +156,4 @@ var test = () => {
   console.log(compute('SMA[10,5]'));
 };
 
-test();
-
-module.exports = {compute, hoistFile, hoistData};
+module.exports = {compute, hoistFile, hoistData, setGlobalOffset};

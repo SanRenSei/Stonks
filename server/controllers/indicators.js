@@ -78,4 +78,37 @@ module.exports = (app) => {
     res.send("OK");
   });
   
+  app.post('/indicators/history/search/:symbol', (req, res) => {
+    var {body, params} = req;
+    var {indicator, indicators, filter, filters} = body;
+    var {symbol} = params;
+    var histFilters = filters || [];
+    filter && histFilters.push(filter);
+    var histIndicators = indicators || [];
+    indicator && histIndicators.push(indicator);
+    
+    var fileData = fs.readFileSync(`data/daily/${symbol}.csv`, 'utf8');
+    var securityData = fileData.split('\n').map(l => l.split(';'));
+    hilbert.hoistData(securityData);
+    
+    var histResults = [];
+    for (var i=0;i<securityData.length;i++) {
+      hilbert.setGlobalOffset(i);
+      
+      var filterMatch = !(histFilters.filter(filter => {
+        return !checkFilter(filter);
+      }).length>0);
+      
+      if (filterMatch) {
+        var indicatorStr = histIndicators.map(indicator => {
+          return computeIndicator(indicator)
+        }).join(';');
+        histResults.push(indicatorStr);
+      }
+      
+    }
+    
+    res.send(histResults);
+  });
+  
 }

@@ -36,7 +36,9 @@ module.exports = ohm.grammar(`
     
     Ind = upper+
     
-    Decimal = digit+ "." digit+ -- dec
+    Decimal = "-" digit+ "." digit+ -- neg_dec
+      | digit+ "." digit+ -- dec
+      | "-" number -- neg
       | number
     number = digit+
       

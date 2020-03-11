@@ -8,7 +8,8 @@ export default (vnode) => {
   return {
     
     view: (vnode) => {
-      var {indicator} = vnode.attrs;
+      var {indicator, remove} = vnode.attrs;
+      remove = remove || (() => {});
       if (!(indicator().type)) {
         indicator().type = prop('');
       }
@@ -20,6 +21,8 @@ export default (vnode) => {
           items={['OPEN', 'LOW', 'HIGH', 'CLOSE', 'PRICE']}
           placeholder="Indicator"
           value={indicator().type}
+          actions={["X"]}
+          onAction={remove}
         />
         
       </div>
