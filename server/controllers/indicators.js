@@ -52,7 +52,7 @@ var searchNextFile = () => {
 
 module.exports = (app) => {
   
-  app.get('/indicators/daily/search', (req, res) => {
+  app.get('/stonks/indicators/daily/search', (req, res) => {
     res.send(JSON.stringify({
       currentSearch: {filters:searchFilters, indicators:searchIndicators},
       progress: searchIndex/searchFiles.length,
@@ -60,7 +60,7 @@ module.exports = (app) => {
     }));
   });
   
-  app.post('/indicators/daily/search', (req, res) => {
+  app.post('/stonks/indicators/daily/search', (req, res) => {
     var {body} = req;
     var {indicator, indicators, filter, filters} = body;
     searchFilters = filters || [];
@@ -78,7 +78,7 @@ module.exports = (app) => {
     res.send("OK");
   });
   
-  app.post('/indicators/history/search/:symbol', (req, res) => {
+  app.post('/stonks/indicators/history/search/:symbol', (req, res) => {
     var {body, params} = req;
     var {indicator, indicators, filter, filters} = body;
     var {symbol} = params;

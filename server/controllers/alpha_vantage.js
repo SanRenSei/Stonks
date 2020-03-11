@@ -7,13 +7,13 @@ const config = require('../config.json');
 
 module.exports = (app) => {
 
-  app.get('/alpha_vantage/symbols', (req, res) => {
+  app.get('/stonks/alpha_vantage/symbols', (req, res) => {
     var files = fs.readdirSync('data/daily');
     files = files.map(f => f.split('.')[0]);
     res.send(files);
   });
 
-  app.get('/alpha_vantage/symbols/:symbol', (req, res) => {
+  app.get('/stonks/alpha_vantage/symbols/:symbol', (req, res) => {
     var {symbol} = req.params;
     try {
       var fileData = fs.readFileSync(`data/daily/${symbol}.csv`, 'utf8').toString();
@@ -25,7 +25,7 @@ module.exports = (app) => {
     }
   });
 
-  app.post('/alpha_vantage/symbols/:symbol/mine', (req, res) => {
+  app.post('/stonks/alpha_vantage/symbols/:symbol/mine', (req, res) => {
     var {symbol} = req.params;
     var url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${symbol}&apikey=${config.alphaVantage.apiKey}&outputsize=full`;
     var filePath = `data/daily/${symbol}.csv`;
