@@ -107,6 +107,7 @@ module.exports = (app) => {
       }
       
     }
+    hilbert.setGlobalOffset(0);
     
     res.send(histResults);
   });
