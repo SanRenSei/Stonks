@@ -4,6 +4,7 @@ var prop = require('mithril/stream');
 import api from './interface/interface';
 
 import FullSearchView from './components/FullSearchView';
+import FunctionAdminView from './components/FunctionAdminView';
 import HistorySearchView from './components/HistorySearchView';
 import SymbolSearchView from './components/SymbolSearchView';
 
@@ -13,6 +14,7 @@ var App = (vnode) => {
   const SYMBOL_SEARCH_VIEW = 0;
   const FULL_SEARCH_VIEW = 1;
   const HISTORY_SEARCH_VIEW = 2;
+  const FUNCTION_ADMIN_VIEW = 3;
   
   return {
   
@@ -30,9 +32,13 @@ var App = (vnode) => {
         <button type="button" class="btn btn-primary btn-lg btn-block"
           onclick={() => {viewMode(HISTORY_SEARCH_VIEW);}}
         > History Search View </button>
+        <button type="button" class="btn btn-primary btn-lg btn-block"
+          onclick={() => {viewMode(FUNCTION_ADMIN_VIEW);}}
+        > Function Admin View </button>
         {viewMode() == SYMBOL_SEARCH_VIEW && <SymbolSearchView />}
         {viewMode() == FULL_SEARCH_VIEW && <FullSearchView />}
         {viewMode() == HISTORY_SEARCH_VIEW && <HistorySearchView />}
+        {viewMode() == FUNCTION_ADMIN_VIEW && <FunctionAdminView />}
       </div>
       );
     }
