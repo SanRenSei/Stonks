@@ -3,9 +3,7 @@ var prop = require('mithril/stream');
 
 import api from '../interface/interface';
 
-import CandlestickChart from './CandlestickChart';
-import DataTable from './DataTable';
-import TabContainer from './TabContainer';
+import ChartAnalysisContainer from './ChartAnalysisContainer';
 import TypeAheadDropdown from './TypeAheadDropdown';
 
 export default (vnode) => {
@@ -38,12 +36,7 @@ export default (vnode) => {
         />
         <br />
         
-        <TabContainer 
-          tabs = {[
-            {content: <DataTable data={data()} />},
-            {content: <CandlestickChart data={data()} />}
-          ]}
-        />
+        <ChartAnalysisContainer data={data} />
         
       </div>
     );

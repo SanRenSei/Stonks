@@ -8,6 +8,7 @@ var searchIndicators = [];
 var searchFiles = [];
 var searchIndex = 0;
 var searchResults = [];
+var searching = false;
 
 var computeIndicator = (indicator) => {
   return hilbert.compute(indicator.type);
@@ -46,6 +47,8 @@ var searchNextFile = () => {
   searchIndex++;
   if (searchIndex < searchFiles.length) {
     setTimeout(searchNextFile, 0);
+  } else {
+    searching = false;
   }
   
 };
@@ -61,6 +64,10 @@ module.exports = (app) => {
   });
   
   app.post('/stonks/indicators/daily/search', (req, res) => {
+    if (searching) {
+      res.send('SEARCH IN PROGRESS');
+      return;
+    }
     var {body} = req;
     var {indicator, indicators, filter, filters} = body;
     searchFilters = filters || [];
@@ -74,6 +81,7 @@ module.exports = (app) => {
     searchResults = [];
     searchIndex = 0;
     
+    searching = true;
     searchNextFile();
     res.send("OK");
   });

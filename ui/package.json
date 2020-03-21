@@ -19,6 +19,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "mithril": "^2.0.4"
+    "mithril": "^2.0.4",
+    "moment": "^2.24.0"
   }
 }
