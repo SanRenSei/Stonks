@@ -15,10 +15,28 @@ export default (vnode) => {
   var fromDate = prop('');
   var toDate = prop('');
   
+  var candlePeriodInputText = prop('1D');
+  var candlePeriod = prop('1D');
+  
   var filteredData = prop([]);
+  
+  var moveBack = () => {
+    fromDate(moment(fromDate(), 'YYYYMMDD').subtract(1, 'month').format('YYYYMMDD'));
+    toDate(moment(toDate(), 'YYYYMMDD').subtract(1, 'month').format('YYYYMMDD'));
+  }
+  
+  var moveForward = () => {
+    fromDate(moment(fromDate(), 'YYYYMMDD').add(1, 'month').format('YYYYMMDD'));
+    toDate(moment(toDate(), 'YYYYMMDD').add(1, 'month').format('YYYYMMDD'));
+  }
+  
+  var validCandlePeriod = (cpt) => {
+    return parseInt(cpt)>0;
+  }
   
   return {
     view: (vnode) => {
+      
       var {data} = vnode.attrs;
       
       if (data().length==0) {
@@ -39,34 +57,65 @@ export default (vnode) => {
         }));
       }
       
-      var headerTabs = <ul class="nav nav-tabs">
-        <li class="nav-item">
-          <a class="nav-link active"
-            onclick={() => activeTab(0)}>
-            <TableIcon />
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active"
-            onclick={() => activeTab(1)}>
-            <BarChartIcon />
-          </a>
-        </li>
-      </ul>;
+      var candleInterval = parseInt(candlePeriod());
+      if (candleInterval>1) {
+        var reducedData = [];
+        for (var i=filteredData().length-1;i>=0;i-=candleInterval) {
+          var startDate = filteredData()[i].date, endDate = filteredData()[i].date;
+          var {open, low, high, close, volume} = filteredData()[i];
+          volume = parseInt(volume);
+          for (var j=i-1;j>i-candleInterval && j>0;j--) {
+            endDate = filteredData()[j].date;
+            low = Math.min(low, filteredData()[j].low);
+            high = Math.max(high, filteredData()[j].high);
+            close = filteredData()[j].close;
+            volume += parseInt(filteredData()[j].volume);
+          }
+          reducedData.unshift({
+            date:`${startDate}-${endDate}`,
+            open, low, high, close, volume
+          });
+        }
+        filteredData(reducedData);
+      }
       
-      return <div class="col-sm-6">
-        <input 
-          value={fromDate()}
+      return <div>
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <button class="btn btn-outline-secondary" type="button"
+              onclick={moveBack}
+            >{"<"}</button>
+          </div>
+          <input 
+            value={fromDate()}
+            oninput = {(evt) => {
+              fromDate(evt.target.value);
+            }}>
+          </input>
+          <input 
+            value={toDate()}
+            oninput = {(evt) => {
+              toDate(evt.target.value);
+            }}>
+          </input>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button"
+              onclick={moveForward}
+            >{">"}</button>
+          </div>
+        </div>
+        <br />
+        
+        <input
+          class="form-control col-md-1"
+          placeholder="Candle Period"
+          value={candlePeriodInputText()}
           oninput = {(evt) => {
-            fromDate(evt.target.value);
-          }}>
-        </input>
-        <input 
-          value={toDate()}
-          oninput = {(evt) => {
-            toDate(evt.target.value);
-          }}>
-        </input>
+            candlePeriodInputText(evt.target.value);
+            validCandlePeriod(candlePeriodInputText()) && candlePeriod(candlePeriodInputText());
+          }}
+        />
+        
         <br />
         <br />
         <TabContainer 

@@ -27,7 +27,7 @@ export default (vnode) => {
         </li>
       </ul>;
       
-      return <div class="col-sm-6">
+      return <div class="col-sm-9">
         {headerTabs}
         {tabs[activeTab()].content}
       </div>;
