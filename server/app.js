@@ -26,6 +26,7 @@ app.use((req,res,next)=>{
 });
 
 require('./controllers/alpha_vantage.js')(app);
+require('./controllers/functionAdmin.js')(app);
 require('./controllers/indicators.js')(app);
 
 

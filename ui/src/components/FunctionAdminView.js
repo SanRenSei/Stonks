@@ -1,38 +1,43 @@
 var m = require('mithril');
 var prop = require('mithril/stream');
 
-import api from '../interface/interface';
+import iFunctionAdmin from '../interface/iFunctionAdmin';
+
+import FunctionCard from './FunctionCard';
 
 export default (vnode) => {
   
-  var functions = prop([{
-    name:'SMA[period = 1,offset = 0]',
-    declaration:'SMA[period = 1, offset = 0] = ΣCLOSE[1:period+offset]/period',
-    longName:'Simple Moving Average',
-    description:'The mean price over the last X days'
-  }]);
+  var functions = prop([]);
   
   return {
     
+    oninit: () => {
+      iFunctionAdmin.getAllFunctions(functions)
+    },
+    
     view: () => {
-      console.log('AAA');
       console.log(functions());
       return (
       <div>
       <br /><br />
       {functions().map(f => {
-        return <div class="col-sm-9"> 
-          <div class="card">
-            <div class="card-header">{f.name}</div>
-            <div class="card-body">
-              <h5 class="card-title">{f.longName}</h5>
-              <h6 class="card-title">{f.declaration}</h6>
-              <p class="card-text">{f.description}</p>
-              <button class="btn btn-primary">Edit</button>
-            </div>
-          </div>
-        </div>
+        return <FunctionCard 
+          cardData={f}
+          saveAction={funcData => iFunctionAdmin.saveFunction(funcData, functions)}
+        />
       })}
+      <br />
+      <button class="btn btn-primary" 
+        onclick={evt => {
+          functions().push({
+            header:'',
+            longName:'',
+            declaration:'',
+            description:''
+          });
+        }}>
+        Add Function
+      </button>
       </div>
     );
     }

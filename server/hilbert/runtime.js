@@ -2,6 +2,8 @@
 const fs = require('fs');
 const grammar = require('./grammar');
 
+var definedIndicators = JSON.parse(fs.readFileSync(`data/functions.json`, 'utf8').toString());
+
 var vapply = (func, p1, p2) => {
   if (!(p1 instanceof Array) && !(p2 instanceof Array)) {
     return func(p1, p2);
@@ -38,13 +40,6 @@ var baseIndicators = {
   volume: (offset = 0) => parseInt(securityData[offset+globalOffset][5])
 };
 
-var definedIndicators = {
-  sma: {
-    defaults: [1,0],
-    hilbert: 'ΣCLOSE[1:x0+x1]/x0'
-  }
-};
-
 
 var actions = {
   SoloInd: ind => baseIndicators[ind.sourceString.toLowerCase()](),
@@ -59,15 +54,16 @@ var actions = {
       }
     }
     if (definedIndicators[indName]) {
+      var indicatorToUse = definedIndicators[indName];
       if (!(paramVal instanceof Array)) {
         paramVal = [paramVal];
       }
-      while (paramVal.length < definedIndicators[indName].defaults.length) {
-        paramVal.push(definedIndicators[indName].defaults[paramVal.length]);
+      while (paramVal.length < indicatorToUse.paramDefaults.length) {
+        paramVal.push(indicatorToUse.paramDefaults[paramVal.length]);
       }
-      var indicatorEvaluation = definedIndicators[indName].hilbert;
+      var indicatorEvaluation = indicatorToUse.declaration;
       paramVal.forEach((p,i) => {
-        indicatorEvaluation = indicatorEvaluation.replace(new RegExp(`x${i}`, 'g'), p);
+        indicatorEvaluation = indicatorEvaluation.replace(new RegExp(indicatorToUse.paramNames[i], 'g'), p);
       });
       return compute(indicatorEvaluation);
     }
@@ -89,6 +85,7 @@ var actions = {
   MultExp_div: (left, _, right) => vapply((a, b) => a/b, left.eval(), right.eval()),
   AddExp_plus: (left, _, right) => vapply((a, b) => a+b, left.eval(), right.eval()),
   AddExp_minus: (left, _, right) => vapply((a, b) => a-b, left.eval(), right.eval()),
+  ParenExp_paren: (left, expr, right) => expr.eval(),
   ArrExp: (left, _, right) => {
     var toReturn = [];
     var min = left.eval(), max = right.eval();
@@ -129,6 +126,10 @@ var compute = (hilbertScript) => {
   }
 }
 
+var refreshFunctions = () => {
+  definedIndicators = JSON.parse(fs.readFileSync(`data/functions.json`, 'utf8').toString());
+}
+
 var test = () => {
   hoistFile(`data/daily/AAPL.csv`);
   console.log(compute('OPEN'));
@@ -154,6 +155,7 @@ var test = () => {
   console.log(compute('1:5+2'));
   console.log(compute('SMA[10]'));
   console.log(compute('SMA[10,5]'));
+  console.log(compute('(1+2+5)/3'));
 };
 
-module.exports = {compute, hoistFile, hoistData, setGlobalOffset};
+module.exports = {compute, hoistFile, hoistData, setGlobalOffset, refreshFunctions};

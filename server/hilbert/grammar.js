@@ -14,8 +14,11 @@ module.exports = ohm.grammar(`
       | AddExp "-" MultExp -- minus
       | MultExp
       
-    MultExp = MultExp "*" PriExp -- times
-      | MultExp "/" PriExp -- div
+    MultExp = MultExp "*" ParenExp -- times
+      | MultExp "/" ParenExp -- div
+      | ParenExp
+      
+    ParenExp = "(" Exp ")" -- paren
       | PriExp
       
     PriExp = Func
