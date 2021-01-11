@@ -51,7 +51,13 @@ module.exports = () => {
       var low = parseFloat(dailies[day]['3. low']);
       var high = parseFloat(dailies[day]['2. high']);
       var close = parseFloat(dailies[day]['4. close']);
+      var adjustedClose = parseFloat(dailies[day]['5. adjusted close']);
       var volume = parseFloat(dailies[day]['6. volume']);
+      var adjustedRatio = adjustedClose/close;
+      open*=adjustedRatio;
+      low*=adjustedRatio;
+      high*=adjustedRatio;
+      close*=adjustedRatio;
       day = moment(day, 'YYYY-MM-DD').format('YYYYMMDD');
       fileLines.push(`${day};${open};${low};${high};${close};${volume}`);
     }
