@@ -95,7 +95,9 @@ var actions = {
     }
     return toReturn;
   },
-  Summation: (_, arr) => arr.eval().reduce((s,v) => s+v)
+  Summation: (_, arr) => arr.eval().reduce((s,v) => s+v),
+  Maximum: (_, arr) => arr.eval().reduce((s,v) => Math.max(s,v)),
+  Minimum: (_, arr) => arr.eval().reduce((s,v) => Math.min(s,v))
 };
 
 var semantics = grammar.createSemantics();
@@ -156,6 +158,9 @@ var test = () => {
   console.log(compute('SMA[10]'));
   console.log(compute('SMA[10,5]'));
   console.log(compute('(1+2+5)/3'));
+  console.log(compute('Σ(HIGH[1:10]-LOW[1:10])/(ΩHIGH[1:10]-ωLOW[1:10])'));
 };
+
+test();
 
 module.exports = {compute, hoistFile, hoistData, setGlobalOffset, refreshFunctions};

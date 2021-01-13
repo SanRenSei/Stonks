@@ -28,14 +28,18 @@ module.exports = ohm.grammar(`
       
     ArrExp = number ":" number
       
-    Func = Summation 
+    Func = Summation
+      | Maximum
+      | Minimum
       | Ind "[" Params "]" -- func
       
     Params = (Exp ",")* Exp
       
     SoloInd = upper+
     
-    Summation = "Σ" PriExp
+    Summation = "Σ" ParenExp
+    Maximum = "Ω" ParenExp
+    Minimum = "ω" ParenExp
     
     Ind = upper+
     
