@@ -26,10 +26,17 @@ module.exports = (app) => {
       fileData = {};
     }
     var {header, declaration, longName, description} = body;
-    var functionName = header.substring(0, header.indexOf('[')).toLowerCase();
-    var functionParams = header.substring(header.indexOf('[')+1, header.length-1).split(',');
-    var paramNames = functionParams.map(funcParam => funcParam.split('=')[0].trim());
-    var paramDefaults = functionParams.map(funcParam => funcParam.split('=')[1].trim());
+    var functionName, functionParams, paramNames, paramDefaults;
+    if (header.indexOf('[')>=0) {
+      functionName = header.substring(0, header.indexOf('[')).toLowerCase();
+      functionParams = header.substring(header.indexOf('[')+1, header.length-1).split(',');
+      paramNames = functionParams.map(funcParam => funcParam.split('=')[0].trim());
+      paramDefaults = functionParams.map(funcParam => funcParam.split('=')[1].trim());
+    } else {
+      functionName = header;
+      paramNames = [];
+      paramDefaults = [];
+    }
     var saveObj = {header, declaration, longName, description, paramNames, paramDefaults};
     fileData[functionName] = saveObj;
     var fileContent = JSON.stringify(fileData);

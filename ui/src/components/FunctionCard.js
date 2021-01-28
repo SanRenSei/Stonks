@@ -6,7 +6,7 @@ import api from '../interface/interface';
 export default (vnode) => {
   
   // Match formats like ABC_DEF[param = 0, param2 = 1]
-  const indicatorNameRegex = /[A-Z_]+\[([a-zA-Z0-9]+\s*=\s*[0-9.]+,?\s*)*]/g;
+  const indicatorNameRegex = /[A-Z_]+(\[([a-zA-Z0-9]+\s*=\s*[0-9.]+,?\s*)*])?/g;
   
   var cardDataEdit = {};
   
