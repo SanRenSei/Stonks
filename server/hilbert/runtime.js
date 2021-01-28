@@ -42,7 +42,24 @@ var baseIndicators = {
 
 
 var actions = {
-  SoloInd: ind => baseIndicators[ind.sourceString.toLowerCase()](),
+  SoloInd: ind => {
+    var indName = ind.sourceString.toLowerCase();
+    if (getCache(indName)) {
+      return getCache(indName);
+    }
+    if (baseIndicators[indName]) {
+      return baseIndicators[indName]()
+    }
+    if (definedIndicators[indName]) {
+      var indicatorToUse = definedIndicators[indName];
+      var indicatorEvaluation = indicatorToUse.declaration;
+      if (indicatorEvaluation.indexOf('→') > 0) {
+        incrementalEvaluation(indName, indicatorEvaluation);
+        return getCache(indName);
+      }
+      return compute(indicatorEvaluation);
+    }
+  },
   Func_func: (ind,_,param,__) => {
     var indName = ind.sourceString.toLowerCase();
     var paramVal = param.eval();
@@ -69,6 +86,13 @@ var actions = {
     }
     throw ('No indicator by name: ' + indName);
   },
+  IncrementalExpr_increment: (p1, _, p3) => {
+    if (globalOffset == securityData.length-1) {
+      return p1.eval();
+    } else {
+      return p3.eval();
+    }
+  },
   Params: (p1, _, p3) => {
     if (p1.eval().length==0) {
       return p3.eval();
@@ -81,6 +105,17 @@ var actions = {
   number: digits => parseInt(digits.sourceString),
   CompExp_lt: (left, _, right) => left.eval() < right.eval(),
   CompExp_gt: (left, _, right) => left.eval() > right.eval(),
+  CompExp_min: (left, _, right) => Math.min(left.eval(), right.eval()),
+  CompExp_max: (left, _, right) => Math.max(left.eval(), right.eval()),
+  QuickBinOp_nullCheck: (left, _, right) => isNaN(left.eval)?right.eval():left.eval(),
+  QuickBinOp_offset: (left, _, right) => {
+    var offset = left.eval();
+    var oldGlobalOffset = globalOffset;
+    setGlobalOffset(oldGlobalOffset + offset);
+    var toReturn = right.eval();
+    setGlobalOffset(oldGlobalOffset);
+    return toReturn;
+  },
   MultExp_times: (left, _, right) => vapply((a, b) => a*b, left.eval(), right.eval()),
   MultExp_div: (left, _, right) => vapply((a, b) => a/b, left.eval(), right.eval()),
   AddExp_plus: (left, _, right) => vapply((a, b) => a+b, left.eval(), right.eval()),
@@ -97,8 +132,29 @@ var actions = {
   },
   Summation: (_, arr) => arr.eval().reduce((s,v) => s+v),
   Maximum: (_, arr) => arr.eval().reduce((s,v) => Math.max(s,v)),
-  Minimum: (_, arr) => arr.eval().reduce((s,v) => Math.min(s,v))
+  Minimum: (_, arr) => arr.eval().reduce((s,v) => Math.min(s,v)),
+  Absolute: (_, val) => Math.abs(val.eval())
 };
+
+var incrementalEvaluation = (indName, indExpr) => {
+  var oldGlobalOffset = globalOffset;
+  globalOffset = securityData.length-1;
+  setCache(indName, compute(indExpr));
+  globalOffset--;
+  while (globalOffset >= 0) {
+    setCache(indName, compute(indExpr));
+    globalOffset--;
+  }
+  globalOffset = oldGlobalOffset;
+}
+
+var getCache = (ind) => {
+  return securityData[globalOffset][ind];
+}
+
+var setCache = (ind, val) => {
+  securityData[globalOffset][ind] = val;
+}
 
 var semantics = grammar.createSemantics();
 semantics.addOperation('eval', actions);
@@ -159,6 +215,14 @@ var test = () => {
   console.log(compute('SMA[10,5]'));
   console.log(compute('(1+2+5)/3'));
   console.log(compute('Σ(HIGH[1:10]-LOW[1:10])/(ΩHIGH[1:10]-ωLOW[1:10])'));
+  console.log(compute('(0/0)'));
+  console.log(compute('(0/0) Ø 5'));
+  console.log(compute('5 Δ CLOSE'));
+  console.log(compute('CLOSE[5]'));
+  console.log(compute('5 Δ SMA[10]'));
+  console.log(compute('5 Δ (SMA[10]>SMA[20])'));
+  console.log(compute('5 Δ (SMA[10]<SMA[20])'));
+  console.log(compute('ATH'));
 };
 
 test();

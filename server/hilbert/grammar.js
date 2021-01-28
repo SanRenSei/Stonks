@@ -4,18 +4,27 @@ const ohm = require('ohm-js');
 module.exports = ohm.grammar(`
   
   Hilbert {
-    Exp = CompExp
-      
+    Exp = IncrementalExpr
+    
+    IncrementalExpr = CompExp "→" CompExp -- increment
+      | CompExp
+    
     CompExp = AddExp "<" AddExp -- lt
       | AddExp ">" AddExp -- gt
+      | AddExp "&" AddExp -- min
+      | AddExp "|" AddExp -- max
       | AddExp
       
     AddExp = AddExp "+" MultExp -- plus
       | AddExp "-" MultExp -- minus
       | MultExp
       
-    MultExp = MultExp "*" ParenExp -- times
-      | MultExp "/" ParenExp -- div
+    MultExp = MultExp "*" QuickBinOp -- times
+      | MultExp "/" QuickBinOp -- div
+      | QuickBinOp
+      
+    QuickBinOp = ParenExp "Ø" ParenExp -- nullCheck
+      | ParenExp "Δ" ParenExp -- offset
       | ParenExp
       
     ParenExp = "(" Exp ")" -- paren
@@ -31,6 +40,7 @@ module.exports = ohm.grammar(`
     Func = Summation
       | Maximum
       | Minimum
+      | Absolute
       | Ind "[" Params "]" -- func
       
     Params = (Exp ",")* Exp
@@ -40,6 +50,7 @@ module.exports = ohm.grammar(`
     Summation = "Σ" ParenExp
     Maximum = "Ω" ParenExp
     Minimum = "ω" ParenExp
+    Absolute = "δ" ParenExp
     
     Ind = upper+
     
