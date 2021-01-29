@@ -72,22 +72,22 @@ var actions = {
     }
     if (definedIndicators[indName]) {
       var indicatorToUse = definedIndicators[indName];
-      if (!(paramVal instanceof Array)) {
-        paramVal = [paramVal];
+      var indicatorHeader = formatIndicatorHeader(indicatorToUse, paramVal);
+      var indicatorEvaluation = formatIndicatorAndParam(indicatorToUse, paramVal);
+      if (getCache(indicatorHeader)) {
+        return getCache(indicatorHeader);
       }
-      while (paramVal.length < indicatorToUse.paramDefaults.length) {
-        paramVal.push(indicatorToUse.paramDefaults[paramVal.length]);
+      if (indicatorEvaluation.indexOf('→') > 0) {
+        incrementalEvaluation(indicatorHeader, indicatorEvaluation);
+        return getCache(indicatorHeader);
       }
-      var indicatorEvaluation = indicatorToUse.declaration;
-      paramVal.forEach((p,i) => {
-        indicatorEvaluation = indicatorEvaluation.replace(new RegExp(indicatorToUse.paramNames[i], 'g'), p);
-      });
       return compute(indicatorEvaluation);
     }
     throw ('No indicator by name: ' + indName);
   },
   IncrementalExpr_increment: (p1, _, p3) => {
-    if (globalOffset == securityData.length-1) {
+    //if (globalOffset == securityData.length-1) {
+    if (globalOffset >= 100) {
       return p1.eval();
     } else {
       return p3.eval();
@@ -138,7 +138,8 @@ var actions = {
 
 var incrementalEvaluation = (indName, indExpr) => {
   var oldGlobalOffset = globalOffset;
-  globalOffset = securityData.length-1;
+  //globalOffset = securityData.length-1;
+  globalOffset = 100;
   setCache(indName, compute(indExpr));
   globalOffset--;
   while (globalOffset >= 0) {
@@ -154,6 +155,27 @@ var getCache = (ind) => {
 
 var setCache = (ind, val) => {
   securityData[globalOffset][ind] = val;
+}
+
+var formatIndicatorHeader = (indicator, params) => {
+  if (!(params instanceof Array)) {
+    params = [params];
+  }
+  return `${indicator}[${params.join(',')}]`;
+}
+
+var formatIndicatorAndParam = (indicator, params) => {
+  if (!(params instanceof Array)) {
+    params = [params];
+  }
+  while (params.length < indicator.paramDefaults.length) {
+    params.push(indicator.paramDefaults[params.length]);
+  }
+  var indicatorEvaluation = indicator.declaration;
+  params.forEach((p,i) => {
+    indicatorEvaluation = indicatorEvaluation.replace(new RegExp(indicator.paramNames[i], 'g'), p);
+  });
+  return indicatorEvaluation;
 }
 
 var semantics = grammar.createSemantics();
@@ -223,8 +245,9 @@ var test = () => {
   console.log(compute('5 Δ (SMA[10]>SMA[20])'));
   console.log(compute('5 Δ (SMA[10]<SMA[20])'));
   console.log(compute('ATH'));
+  console.log(compute('EMA[10]'));
 };
 
-test();
+//test();
 
 module.exports = {compute, hoistFile, hoistData, setGlobalOffset, refreshFunctions};
