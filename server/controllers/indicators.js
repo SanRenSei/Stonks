@@ -1,5 +1,6 @@
 
 const fs = require('fs');
+const zeitgeist = require('zeitgeist-lang');
 
 const hilbert = require('../hilbert/runtime');
 
@@ -11,6 +12,7 @@ var searchResults = [];
 var searching = false;
 
 var computeIndicator = (indicator) => {
+  hilbert.setGlobalOffset(0);
   return hilbert.compute(indicator.type);
 };
 
