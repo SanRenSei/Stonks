@@ -1,6 +1,5 @@
 
 const fs = require('fs');
-const zeitgeist = require('zeitgeist-lang');
 
 const hilbert = require('../hilbert/runtime');
 
