@@ -45,4 +45,19 @@ module.exports = (app) => {
     res.send(fileData);
   });
   
+  app.delete('/stonks/functions/:indicator', (req, res) => {
+    var {indicator} = req.params;
+    var fileData;
+    try {
+      fileData = JSON.parse(fs.readFileSync(`data/functions.json`, 'utf8').toString());
+    } catch (err) {
+      fileData = {};
+    }
+    delete fileData[indicator.toLowerCase()];
+    var fileContent = JSON.stringify(fileData);
+    fs.writeFileSync(`data/functions.json`, fileContent);
+    hilbert.refreshFunctions();
+    res.send(fileData);
+  });
+  
 }

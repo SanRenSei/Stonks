@@ -2,6 +2,8 @@
 const fs = require('fs');
 const grammar = require('./grammar');
 
+const nasdaqAttrReader = require('../io/nasdaqAttrReader');
+
 var definedIndicators = JSON.parse(fs.readFileSync(`data/functions.json`, 'utf8').toString());
 
 var vapply = (func, p1, p2) => {
@@ -25,7 +27,12 @@ var vapply = (func, p1, p2) => {
 }
 
 var securityData = [];
+var securityName = '';
 var globalOffset = 0;
+
+var setSecurityName = (name) => {
+  securityName = name;
+}
 
 var setGlobalOffset = (i) => {
   globalOffset = i;
@@ -37,7 +44,12 @@ var baseIndicators = {
   low: (offset = 0) => parseFloat(securityData[offset+globalOffset][2]),
   high: (offset = 0) => parseFloat(securityData[offset+globalOffset][3]),
   close: (offset = 0) => parseFloat(securityData[offset+globalOffset][4]),
-  volume: (offset = 0) => parseInt(securityData[offset+globalOffset][5])
+  volume: (offset = 0) => parseInt(securityData[offset+globalOffset][5]),
+  name: () => nasdaqAttrReader.fetchData(securityName).name,
+  stock: () => nasdaqAttrReader.fetchData(securityName).isETF=='N',
+  opxcount: () => nasdaqAttrReader.fetchData(securityName).optionCount,
+  opxdates: () => nasdaqAttrReader.fetchData(securityName).optionDates,
+  opxprices: () => nasdaqAttrReader.fetchData(securityName).optionPrices
 };
 
 
@@ -212,6 +224,7 @@ var refreshFunctions = () => {
 
 var test = () => {
   hoistFile(`data/daily/AAPL.csv`);
+  setSecurityName('AAPL');
   console.log(compute('OPEN'));
   console.log(compute('OPEN[0]'));
   console.log(compute('OPEN[1]'));
@@ -246,8 +259,11 @@ var test = () => {
   console.log(compute('5 Δ (SMA[10]<SMA[20])'));
   console.log(compute('ATH'));
   console.log(compute('EMA[10]'));
+  console.log(compute('STOCK'));
+  console.log(compute('NAME'));
+  console.log(compute('OPXCOUNT'));
+  console.log(compute('OPXDATES'));
+  console.log(compute('OPXPRICES'));
 };
 
-//test();
-
-module.exports = {compute, hoistFile, hoistData, setGlobalOffset, refreshFunctions};
+module.exports = {compute, hoistFile, hoistData, setGlobalOffset, setSecurityName, refreshFunctions};

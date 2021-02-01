@@ -32,6 +32,8 @@ var checkFilter = (filter) => {
 
 var searchNextFile = () => {
   var fileName = searchFiles[searchIndex];
+  var symbolName = fileName.split('.')[0];
+  hilbert.setSecurityName(symbolName);
   hilbert.hoistFile(`data/daily/${fileName}`);
     
   var filterMatch = !(searchFilters.filter(filter => {
@@ -42,7 +44,7 @@ var searchNextFile = () => {
     var indicatorStr = searchIndicators.map(indicator => {
       return computeIndicator(indicator)
     }).join(';');
-    searchResults.push(`${fileName.split('.')[0]};${indicatorStr}`);
+    searchResults.push(`${symbolName};${indicatorStr}`);
   }
   
   searchIndex++;
@@ -98,6 +100,7 @@ module.exports = (app) => {
     
     var fileData = fs.readFileSync(`data/daily/${symbol}.csv`, 'utf8');
     var securityData = fileData.split('\n').map(l => l.split(';'));
+    hilbert.setSecurityName(symbol);
     hilbert.hoistData(securityData);
     
     var histResults = [];
