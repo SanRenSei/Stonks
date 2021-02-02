@@ -121,12 +121,13 @@ var actions = {
   CompExp_max: (left, _, right) => Math.max(left.eval(), right.eval()),
   QuickBinOp_nullCheck: (left, _, right) => isNaN(left.eval)?right.eval():left.eval(),
   QuickBinOp_offset: (left, _, right) => {
-    var offset = left.eval();
-    var oldGlobalOffset = globalOffset;
-    setGlobalOffset(oldGlobalOffset + offset);
-    var toReturn = right.eval();
-    setGlobalOffset(oldGlobalOffset);
-    return toReturn;
+    return vapply((a,b) => {
+      var oldGlobalOffset = globalOffset;
+      setGlobalOffset(oldGlobalOffset + a);
+      var toReturn = b.eval();
+      setGlobalOffset(oldGlobalOffset);
+      return toReturn;
+    }, left.eval(), right);
   },
   MultExp_times: (left, _, right) => vapply((a, b) => a*b, left.eval(), right.eval()),
   MultExp_div: (left, _, right) => vapply((a, b) => a/b, left.eval(), right.eval()),
@@ -264,6 +265,10 @@ var test = () => {
   console.log(compute('OPXCOUNT'));
   console.log(compute('OPXDATES'));
   console.log(compute('OPXPRICES'));
+  console.log(compute('1:5 Δ CLOSE'));
+  console.log(compute('1:5 Δ ATH'));
 };
+
+//test();
 
 module.exports = {compute, hoistFile, hoistData, setGlobalOffset, setSecurityName, refreshFunctions};
