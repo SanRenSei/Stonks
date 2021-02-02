@@ -69,7 +69,7 @@ var actions = {
         incrementalEvaluation(indName, indicatorEvaluation);
         return getCache(indName);
       }
-      return compute(indicatorEvaluation);
+      return setCache(indName, compute(indicatorEvaluation));
     }
   },
   Func_func: (ind,_,param,__) => {
@@ -93,7 +93,7 @@ var actions = {
         incrementalEvaluation(indicatorHeader, indicatorEvaluation);
         return getCache(indicatorHeader);
       }
-      return compute(indicatorEvaluation);
+      return setCache(indicatorHeader, compute(indicatorEvaluation));
     }
     throw ('No indicator by name: ' + indName);
   },
@@ -168,6 +168,7 @@ var getCache = (ind) => {
 
 var setCache = (ind, val) => {
   securityData[globalOffset][ind] = val;
+  return val;
 }
 
 var formatIndicatorHeader = (indicator, params) => {
