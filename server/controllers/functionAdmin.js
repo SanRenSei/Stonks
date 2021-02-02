@@ -33,7 +33,7 @@ module.exports = (app) => {
       paramNames = functionParams.map(funcParam => funcParam.split('=')[0].trim());
       paramDefaults = functionParams.map(funcParam => funcParam.split('=')[1].trim());
     } else {
-      functionName = header;
+      functionName = header.toLowerCase();
       paramNames = [];
       paramDefaults = [];
     }
