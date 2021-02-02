@@ -211,6 +211,7 @@ var compute = (hilbertScript) => {
     } catch (e) {
       console.log('ERROR WHILE COMPUTING INDICATOR');
       console.log('SCRIPT: ' + JSON.stringify(hilbertScript));
+      console.log('Global offset is: ' + globalOffset);
       console.log(e);
       return NaN;
     }
