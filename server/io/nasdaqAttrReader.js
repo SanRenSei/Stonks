@@ -19,7 +19,7 @@ var rowToObj = (row) => {
 };
 
 var loadFile = () => {
-  var fileData = '';
+  var fileData = [];
   try {
     fs.readFileSync(filePath, 'utf8').toString().split('\n').map(line => line.split('|'));
   } catch (e) {}
@@ -34,7 +34,7 @@ var fetchData = (symbol) => {
   if (new Date().getTime() > lastFetch + 1000*60*60*24) { // Avoid caching data longer than 24 hours
     loadFile();
   }
-  return nasdaqAttrs[symbol.toLowerCase()];
+  return nasdaqAttrs[symbol.toLowerCase()] || {};
 }
 
 loadFile();
