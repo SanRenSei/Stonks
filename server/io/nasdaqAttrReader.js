@@ -19,7 +19,10 @@ var rowToObj = (row) => {
 };
 
 var loadFile = () => {
-  var fileData = fs.readFileSync(filePath, 'utf8').toString().split('\n').map(line => line.split('|'));
+  var fileData = '';
+  try {
+    fs.readFileSync(filePath, 'utf8').toString().split('\n').map(line => line.split('|'));
+  } catch (e) {}
   fileData.forEach(row => {
     var rowObj = rowToObj(row);
     nasdaqAttrs[rowObj.symbol.toLowerCase()] = rowObj;

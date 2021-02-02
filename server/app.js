@@ -33,6 +33,7 @@ require('./controllers/indicators.js')(app);
 
 
 startup();
+nasdaqFTPer();
 setInterval(autominer, 1000*60*6); // Every 6 minutes
 setInterval(() => {
   nasdaqFTPer();

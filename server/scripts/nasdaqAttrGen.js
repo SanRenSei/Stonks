@@ -10,7 +10,7 @@ module.exports = () => {
   var err = '';
   
   var attrs = [];
-  var nasdaqSymbols = fs.readFileSync('data/nasdaqlisted.txt', 'utf8').toString().split('\n');;
+  var nasdaqSymbols = fs.readFileSync('data/nasdaqlisted.txt', 'utf8').toString().split('\n');
   var otherSymbols = fs.readFileSync('data/otherlisted.txt', 'utf8').toString().split('\n');
   var options = fs.readFileSync('data/options.txt', 'utf8').toString().split('\n');
   
