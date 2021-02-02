@@ -163,19 +163,34 @@ var incrementalEvaluation = (indName, indExpr) => {
 }
 
 var getCache = (ind) => {
-  return securityData[globalOffset][ind];
+  if (!securityData[globalOffset]) {
+    return undefined;
+  }
+  try {
+    return securityData[globalOffset][ind];
+  } catch (e) {
+    console.log(`Failed to get ${ind} from cache at global offset ${globalOffset}`);
+  }
 }
 
 var setCache = (ind, val) => {
-  securityData[globalOffset][ind] = val;
-  return val;
+  if (!securityData[globalOffset]) {
+    return val;
+  }
+  try {
+    securityData[globalOffset][ind] = val;
+    return val;
+  } catch (e) {
+    console.log(`Failed to set ${ind} to ${val} in cache at global offset ${globalOffset}`);
+  }
 }
 
 var formatIndicatorHeader = (indicator, params) => {
   if (!(params instanceof Array)) {
     params = [params];
   }
-  return `${indicator}[${params.join(',')}]`;
+  var indicatorName = indicator.header.split('[')[0];
+  return `${indicatorName}[${params.join(',')}]`;
 }
 
 var formatIndicatorAndParam = (indicator, params) => {
@@ -212,6 +227,7 @@ var compute = (hilbertScript) => {
       console.log('ERROR WHILE COMPUTING INDICATOR');
       console.log('SCRIPT: ' + JSON.stringify(hilbertScript));
       console.log('Global offset is: ' + globalOffset);
+      console.log('Symbol is: ' + securityName);
       console.log(e);
       return NaN;
     }
