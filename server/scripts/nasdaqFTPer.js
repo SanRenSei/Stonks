@@ -45,5 +45,8 @@ module.exports = () => {
   c.connect({
     host:'ftp.nasdaqtrader.com'
   });
+  c.on('error', (err) => {
+    console.log(err);
+  });
   
 }
