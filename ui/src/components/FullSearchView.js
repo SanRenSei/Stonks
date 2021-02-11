@@ -53,11 +53,13 @@ export default (vnode) => {
           >{`${Math.floor(data().progress*100)}%`}</div>
         </div>}
         <br />
-        {data().results.map(dr => {
-          return <tr>
-            {dr.map(dc => <td>{dc}</td>)}
-          </tr>
-        })}
+        <table class="results-table">
+          {data().results.map(dr => {
+            return <tr>
+              {dr.map(dc => <td>{dc}</td>)}
+            </tr>
+          })}
+        </table>
       </div>
     );
     }
