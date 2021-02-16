@@ -98,8 +98,7 @@ var actions = {
     throw ('No indicator by name: ' + indName);
   },
   IncrementalExpr_increment: (p1, _, p3) => {
-    //if (globalOffset == securityData.length-1) {
-    if (globalOffset >= 100) {
+    if (globalOffset == securityData.length-1) {
       return p1.eval();
     } else {
       return p3.eval();
@@ -117,6 +116,7 @@ var actions = {
   number: digits => parseInt(digits.sourceString),
   CompExp_lt: (left, _, right) => left.eval() < right.eval(),
   CompExp_gt: (left, _, right) => left.eval() > right.eval(),
+  CompExp_eq: (left, _, right) => left.eval() == right.eval(),
   CompExp_min: (left, _, right) => Math.min(left.eval(), right.eval()),
   CompExp_max: (left, _, right) => Math.max(left.eval(), right.eval()),
   QuickBinOp_nullCheck: (left, _, right) => isNaN(left.eval)?right.eval():left.eval(),
@@ -151,12 +151,12 @@ var actions = {
 
 var incrementalEvaluation = (indName, indExpr) => {
   var oldGlobalOffset = globalOffset;
-  //globalOffset = securityData.length-1;
-  globalOffset = 100;
-  setCache(indName, compute(indExpr));
+  globalOffset = securityData.length-1;
+  var s = semantics(grammar.match(indExpr));
+  setCache(indName, s.eval());
   globalOffset--;
   while (globalOffset >= 0) {
-    setCache(indName, compute(indExpr));
+    setCache(indName, s.eval());
     globalOffset--;
   }
   globalOffset = oldGlobalOffset;
@@ -242,8 +242,8 @@ var refreshFunctions = () => {
 }
 
 var test = () => {
-  hoistFile(`data/daily/AAPL.csv`);
-  setSecurityName('AAPL');
+  hoistFile(`data/daily/SNAP.csv`);
+  setSecurityName('CARS');
   console.log(compute('OPEN'));
   console.log(compute('OPEN[0]'));
   console.log(compute('OPEN[1]'));
@@ -285,6 +285,7 @@ var test = () => {
   console.log(compute('OPXPRICES'));
   console.log(compute('1:5 Δ CLOSE'));
   console.log(compute('1:5 Δ ATH'));
+  console.log(compute('Σ(1:10 Δ (HIGH=ATH))'));
 };
 
 //test();

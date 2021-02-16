@@ -11,6 +11,7 @@ module.exports = ohm.grammar(`
     
     CompExp = AddExp "<" AddExp -- lt
       | AddExp ">" AddExp -- gt
+      | AddExp "=" AddExp -- eq
       | AddExp "&" AddExp -- min
       | AddExp "|" AddExp -- max
       | AddExp
