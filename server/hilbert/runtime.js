@@ -39,12 +39,48 @@ var setGlobalOffset = (i) => {
 }
 
 var baseIndicators = {
-  date: (offset = 0) => parseInt(securityData[offset+globalOffset][0]),
-  open: (offset = 0) => parseFloat(securityData[offset+globalOffset][1]),
-  low: (offset = 0) => parseFloat(securityData[offset+globalOffset][2]),
-  high: (offset = 0) => parseFloat(securityData[offset+globalOffset][3]),
-  close: (offset = 0) => parseFloat(securityData[offset+globalOffset][4]),
-  volume: (offset = 0) => parseInt(securityData[offset+globalOffset][5]),
+  date: (offset = 0) => {
+    try {
+      return parseInt(securityData[offset+globalOffset][0]);
+    } catch (e) {
+      throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
+    }
+  },
+  open: (offset = 0) => {
+    try {
+      return parseInt(securityData[offset+globalOffset][1]);
+    } catch (e) {
+      throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
+    }
+  },
+  low: (offset = 0) => {
+    try {
+      return parseInt(securityData[offset+globalOffset][2]);
+    } catch (e) {
+      throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
+    }
+  },
+  high: (offset = 0) => {
+    try {
+      return parseInt(securityData[offset+globalOffset][3]);
+    } catch (e) {
+      throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
+    }
+  },
+  close: (offset = 0) => {
+    try {
+      return parseInt(securityData[offset+globalOffset][4]);
+    } catch (e) {
+      throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
+    }
+  },
+  volume: (offset = 0) => {
+    try {
+      return parseInt(securityData[offset+globalOffset][5]);
+    } catch (e) {
+      throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
+    }
+  },
   name: () => nasdaqAttrReader.fetchData(securityName).name,
   stock: () => nasdaqAttrReader.fetchData(securityName).isETF=='N',
   opxcount: () => nasdaqAttrReader.fetchData(securityName).optionCount,
