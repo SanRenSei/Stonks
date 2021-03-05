@@ -36,7 +36,7 @@ module.exports = ohm.grammar(`
       | ArrExp
       | Decimal
       
-    ArrExp = number ":" number
+    ArrExp = ParenExp ":" ParenExp
       
     Func = Summation
       | Maximum
