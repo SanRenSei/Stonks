@@ -10,14 +10,14 @@ var searchIndex = 0;
 var searchResults = [];
 var searching = false;
 
-var computeIndicator = (indicator) => {
-  hilbert.setGlobalOffset(0);
+var computeIndicator = (indicator, offset = 0) => {
+  hilbert.setGlobalOffset(offset);
   return hilbert.compute(indicator.type);
 };
 
-var checkFilter = (filter) => {
+var checkFilter = (filter, offset = 0) => {
   var {indicator, low, high} = filter;
-  var indicatorVal = computeIndicator(indicator);
+  var indicatorVal = computeIndicator(indicator, offset);
   if (low && indicatorVal < low) {
     return false;
   }
@@ -108,12 +108,12 @@ module.exports = (app) => {
       hilbert.setGlobalOffset(i);
       
       var filterMatch = !(histFilters.filter(filter => {
-        return !checkFilter(filter);
+        return !checkFilter(filter, i);
       }).length>0);
       
       if (filterMatch) {
         var indicatorStr = histIndicators.map(indicator => {
-          return computeIndicator(indicator)
+          return computeIndicator(indicator, i)
         }).join(';');
         histResults.push(indicatorStr);
       }
