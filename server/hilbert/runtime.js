@@ -48,28 +48,28 @@ var baseIndicators = {
   },
   open: (offset = 0) => {
     try {
-      return parseInt(securityData[offset+globalOffset][1]);
+      return parseFloat(securityData[offset+globalOffset][1]);
     } catch (e) {
       throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
     }
   },
   low: (offset = 0) => {
     try {
-      return parseInt(securityData[offset+globalOffset][2]);
+      return parseFloat(securityData[offset+globalOffset][2]);
     } catch (e) {
       throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
     }
   },
   high: (offset = 0) => {
     try {
-      return parseInt(securityData[offset+globalOffset][3]);
+      return parseFloat(securityData[offset+globalOffset][3]);
     } catch (e) {
       throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
     }
   },
   close: (offset = 0) => {
     try {
-      return parseInt(securityData[offset+globalOffset][4]);
+      return parseFloat(securityData[offset+globalOffset][4]);
     } catch (e) {
       throw `Security data has ${securityData.length} days. Unable to get data for offset ${offset} at global offset ${globalOffset}`
     }
@@ -322,6 +322,7 @@ var test = () => {
   console.log(compute('1:5 Δ CLOSE'));
   console.log(compute('1:5 Δ ATH'));
   console.log(compute('Σ(1:10 Δ (HIGH=ATH))'));
+  console.log(compute('100 Δ (ωLOW[-30:0]/CLOSE)'));
 };
 
 //test();

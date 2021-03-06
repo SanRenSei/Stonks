@@ -28,8 +28,8 @@ module.exports = ohm.grammar(`
       | ParenExp "Δ" ParenExp -- offset
       | ParenExp
       
-    ParenExp = "(" Exp ")" -- paren
-      | PriExp
+    ParenExp = PriExp
+      | "(" Exp ")" -- paren
       
     PriExp = Func
       | SoloInd
