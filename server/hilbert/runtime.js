@@ -140,6 +140,19 @@ var actions = {
       return p3.eval();
     }
   },
+  IncrementalExpr_rewind: (p1, _, p3) => {
+    var oldOffset = globalOffset;
+    while (globalOffset<securityData.length) {
+      if (p1.eval()) {
+        var toReturn = p3.eval();
+        setGlobalOffset(oldOffset);
+        return toReturn;
+      }
+      globalOffset++;
+    }
+    setGlobalOffset(oldOffset);
+    return null;
+  },
   Params: (p1, _, p3) => {
     if (p1.eval().length==0) {
       return p3.eval();
@@ -323,6 +336,8 @@ var test = () => {
   console.log(compute('1:5 Δ ATH'));
   console.log(compute('Σ(1:10 Δ (HIGH=ATH))'));
   console.log(compute('100 Δ (ωLOW[-30:0]/CLOSE)'));
+  console.log(compute('(DATE=20200320) ⏪ DATE'));
+  console.log(compute('(DATE=20200320) ⏪ (CLOSE[-30]/CLOSE)'));
 };
 
 //test();

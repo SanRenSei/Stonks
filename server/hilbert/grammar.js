@@ -7,6 +7,7 @@ module.exports = ohm.grammar(`
     Exp = IncrementalExpr
     
     IncrementalExpr = CompExp "→" CompExp -- increment
+      | CompExp "⏪" CompExp -- rewind
       | CompExp
     
     CompExp = AddExp "<" AddExp -- lt
