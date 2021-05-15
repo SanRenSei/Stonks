@@ -4,7 +4,14 @@ const grammar = require('./grammar');
 
 const nasdaqAttrReader = require('../io/nasdaqAttrReader');
 
-var definedIndicators = JSON.parse(fs.readFileSync(`data/functions.json`, 'utf8').toString());
+var definedIndicators;
+
+try {
+  definedIndicators = JSON.parse(fs.readFileSync(`data/functions.json`, 'utf8').toString());
+} catch (e) {
+  console.log('Warning: Indicators file not found.');
+  definedIndicators = {};
+}
 
 var vapply = (func, p1, p2) => {
   if (!(p1 instanceof Array) && !(p2 instanceof Array)) {

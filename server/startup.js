@@ -12,6 +12,9 @@ module.exports = () => {
     return;
   } catch (err) {
     // File not exists
+    if (!fs.existsSync('data')){
+        fs.mkdirSync('data');
+    }
     fs.copyFileSync(masterFile, targetFile);
   }
   

@@ -23,7 +23,7 @@ var loadFile = () => {
   try {
     fileData = fs.readFileSync(filePath, 'utf8').toString().split('\n').map(line => line.split('|'));
   } catch (e) {
-    console.log(e);
+    console.log('Warning: Nasdaq Attr File Not Found');
   }
   fileData.forEach(row => {
     var rowObj = rowToObj(row);
