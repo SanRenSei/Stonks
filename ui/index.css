@@ -16,6 +16,10 @@ table.results-table tr:nth-child(even) {
   background-color: #e4e4e4;
 }
 
-table.results-table td {
+.highlight {
+  background-color: #dddddd;
+}
+
+td, th {
   border: 1px solid black;
 }
