@@ -13,8 +13,8 @@ module.exports = ohm.grammar(`
     CompExp = AddExp "<" AddExp -- lt
       | AddExp ">" AddExp -- gt
       | AddExp "=" AddExp -- eq
-      | AddExp "&" AddExp -- min
-      | AddExp "|" AddExp -- max
+      | AddExp "&" CompExp -- min
+      | AddExp "|" CompExp -- max
       | AddExp
       
     AddExp = AddExp "+" MultExp -- plus
@@ -23,6 +23,7 @@ module.exports = ohm.grammar(`
       
     MultExp = MultExp "*" QuickBinOp -- times
       | MultExp "/" QuickBinOp -- div
+      | MultExp "🔗" QuickBinOp -- join
       | QuickBinOp
       
     QuickBinOp = ParenExp "Ø" ParenExp -- nullCheck

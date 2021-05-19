@@ -185,6 +185,24 @@ var actions = {
       return toReturn;
     }, left.eval(), right);
   },
+  MultExp_join: (left, _, right) => {
+    var leftVal = left.eval(), rightVal = right.eval();
+    if (leftVal instanceof Array && rightVal instanceof Array) {
+      rightVal.forEach(item => {
+        leftVal.push(item);
+      });
+      return leftVal;
+    }
+    if (leftVal instanceof Array) {
+      leftVal.push(rightVal);
+      return leftVal;
+    }
+    if (rightVal instanceof Array) {
+      rightVal.splice(0, 0, leftVal);
+      return rightVal;
+    }
+    return [leftVal, rightVal];
+  },
   MultExp_times: (left, _, right) => vapply((a, b) => a*b, left.eval(), right.eval()),
   MultExp_div: (left, _, right) => vapply((a, b) => a/b, left.eval(), right.eval()),
   AddExp_plus: (left, _, right) => vapply((a, b) => a+b, left.eval(), right.eval()),
@@ -298,7 +316,7 @@ var refreshFunctions = () => {
 }
 
 var test = () => {
-  hoistFile(`data/daily/SNAP.csv`);
+  hoistFile(`data/daily/AG.csv`);
   setSecurityName('CARS');
   console.log(compute('OPEN'));
   console.log(compute('OPEN[0]'));
@@ -345,6 +363,12 @@ var test = () => {
   console.log(compute('100 Δ (ωLOW[-30:0]/CLOSE)'));
   console.log(compute('(DATE=20200320) ⏪ DATE'));
   console.log(compute('(DATE=20200320) ⏪ (CLOSE[-30]/CLOSE)'));
+  console.log(compute('NASCAR'));
+  console.log(compute('1 🔗 2'));
+  console.log(compute('1 🔗 2 🔗 3'));
+  console.log(compute('(1 🔗 2) 🔗 (3 🔗 4)'));
+  console.log(compute('(1) 🔗 (3 🔗 4)'));
+  console.log(compute('(1 🔗 2) 🔗 (3)'));
 };
 
 //test();

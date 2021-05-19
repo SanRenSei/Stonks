@@ -88,6 +88,26 @@ module.exports = (app) => {
     searchNextFile();
     res.send("OK");
   });
+
+  app.post('/stonks/indicators/daily/eval/:symbol', (req, res) => {
+      if (searching) {
+        res.send('SEARCH IN PROGRESS');
+        return;
+      }
+      var {body, params} = req;
+      var {indicator} = body;
+      var {symbol} = params;
+
+      var fileData = fs.readFileSync(`data/daily/${symbol}.csv`, 'utf8');
+      var securityData = fileData.split('\n').map(l => l.split(';'));
+      hilbert.setSecurityName(symbol);
+      hilbert.hoistData(securityData);
+      hilbert.setGlobalOffset(0);
+
+      var result = hilbert.compute(indicator);
+
+      res.send(""+result);
+    });
   
   app.post('/stonks/indicators/history/search/:symbol', (req, res) => {
     var {body, params} = req;

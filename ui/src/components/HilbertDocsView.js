@@ -25,7 +25,8 @@ export default (vnode) => {
         {name: 'δ', desc: 'Absolute value of a number'},
         {name: ':', desc: 'Generate an array of integer values between two numbers, inclusive'},
         {name: '&', desc: 'Minimum between two numbers'},
-        {name: '|', desc: 'Maximum between two numbers'}
+        {name: '|', desc: 'Maximum between two numbers'},
+        {name: '🔗', desc: 'Join values into an array'}
       ];
       var arrayOperators = [
         {name: 'Σ', desc: 'Add all values in an array'},
@@ -90,13 +91,15 @@ export default (vnode) => {
         <p> 2+2 will return 4 </p>
         <p> 2*3 will return 6 </p>
         <p> 1:5 will return [1,2,3,4,5] </p>
-        <p> δ-5 will return -5 </p>
+        <p> δ-5 will return 5 </p>
         <p> (1:5)*3 will return [3,6,9,12,15] </p>
         <p> (1:5)*(1:5) will return [1,4,9,16,25] </p>
         <p> δ(-3:3) will return [3,2,1,0,1,2,3] </p>
         <p> The offset parameter used in the basic function may also be an array. </p>
         <p> CLOSE[1:5] will return an array of the last 5 closing prices on trading days. </p>
         <p> OPEN[0:4]-CLOSE[1:5] will return an array of the last 5 overnight price changes between trading days </p>
+        <p> 1 🔗 2 will return the array [1,2] </p>
+        <p> [3,1,4] 🔗 [5,9,2] will return the array [3,1,4,1,5,9,2] </p>
         <h2>Array Operators </h2>
         <table>
           <tr>
