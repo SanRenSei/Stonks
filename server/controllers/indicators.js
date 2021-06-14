@@ -39,7 +39,7 @@ var searchNextFile = () => {
   var filterMatch = true;
   var i=0;
   while (filterMatch && i<searchFilters.length) {
-    filterMatch = checkFilter(searchFilter[i]);
+    filterMatch = checkFilter(searchFilters[i]);
     i++;
   }
   
