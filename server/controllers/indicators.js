@@ -24,7 +24,7 @@ var checkFilter = (filter, offset = 0) => {
   if (high && indicatorVal > high) {
     return false;
   }
-  if (!low && !high && indicatorVal==0) {
+  if (!low && !high && (indicatorVal==0 || isNaN(indicatorVal) || indicatorVal==null)) {
     return false;
   }
   return true;
@@ -35,10 +35,13 @@ var searchNextFile = () => {
   var symbolName = fileName.split('.')[0];
   hilbert.setSecurityName(symbolName);
   hilbert.hoistFile(`data/daily/${fileName}`);
-    
-  var filterMatch = !(searchFilters.filter(filter => {
-    return !checkFilter(filter);
-  }).length>0);
+
+  var filterMatch = true;
+  var i=0;
+  while (filterMatch && i<searchFilters.length) {
+    filterMatch = checkFilter(searchFilter[i]);
+    i++;
+  }
   
   if (filterMatch) {
     var indicatorStr = searchIndicators.map(indicator => {
