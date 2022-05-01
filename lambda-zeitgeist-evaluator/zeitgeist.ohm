@@ -1,0 +1,42 @@
+Zeitgeist {
+
+  Program = Exp+
+
+  Exp = LoadExp ";" --loadExp
+    | DefineExp ";" --defineExp
+    | InPeriodExp ";" --inPeriodExp
+    | OutPeriodExp ";" --outPeriodExp
+    | ExportExp ";" --exportExp
+
+  LoadExp = "Load" SeriesName
+
+  DefineExp = "Define" SeriesName "=" ZeitExp
+
+  InPeriodExp = "InPeriod" MomentRange
+    | "InPeriod" MomentConst
+
+  OutPeriodExp = "OutPeriod" MomentRange
+    | "OutPeriod" MomentConst
+
+  ExportExp = "Export" SeriesName
+
+  ZeitExp = ArithExp
+
+  ArithExp = SeriesName "+" SeriesName --addExp
+    | SeriesName "-" SeriesName --subtrExp
+
+  SeriesName = SeriesChar+
+
+  SeriesChar = upper | "_" | "."
+
+  Const = ConstNum --num
+    | MomentConst --moment
+    | "\"" alnum+ "\"" --str
+
+  MomentRange = MomentConst "-" MomentConst
+
+  MomentConst = "⌛" ConstNum
+
+  ConstNum = digit+
+
+}
