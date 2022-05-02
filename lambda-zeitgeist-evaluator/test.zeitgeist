@@ -3,8 +3,9 @@ Load SPY;
 Load QQQ;
 
 Define DIFF=SPY.CLOSE-SPY.OPEN;
+Define HGT=SPY.HIGH/SPY.LOW;
 
-OutPeriod ⌛20220401;
-Export SPY.OPEN;
+OutPeriod ⌛20220301 - ⌛20220401;
 Export SPY.CLOSE;
 Export DIFF;
+Export HGT;

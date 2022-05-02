@@ -1,4 +1,5 @@
 let dataloader = require('./dataLoader.js');
+let dateArithmetic = require('./dateArithmetic.js');
 let expressionEval = require('./expressionEval.js');
 let zStore = require('./zStore.js');
 
@@ -6,10 +7,12 @@ function DefineExp(arg0, arg1) {
   zStore.addDefinition(arg0, arg1);
 }
 
-function ExportExp(arg0) {
-  zStore.setMomentPointer(zStore.getOutPeriodStart());
-  let result = expressionEval(arg0);
-  console.log(result);
+async function ExportExp(arg0) {
+  for (let i=zStore.getOutPeriodStart();i<zStore.getOutPeriodEnd();i=dateArithmetic.getNextDate(i)) {
+    zStore.setMomentPointer(i);
+    let result = await expressionEval(arg0);
+    console.log(`${i} ${result}`);
+  }
 }
 
 function InPeriodExp(arg0) {

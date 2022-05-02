@@ -1,11 +1,26 @@
 let zStore = require('./zStore.js');
 
+function ArithExp_addExp(arg0, arg1) {
+  return evalExpr(arg0) + evalExpr(arg1);
+}
+
 function ArithExp_subtrExp(arg0, arg1) {
   return evalExpr(arg0) - evalExpr(arg1);
 }
 
+function MultExp_multExp(arg0, arg1) {
+  return evalExpr(arg0) * evalExpr(arg1);
+}
+
+function MultExp_divExp(arg0, arg1) {
+  return evalExpr(arg0) / evalExpr(arg1);
+}
+
 let functions = {
-  ArithExp_subtrExp
+  ArithExp_addExp,
+  ArithExp_subtrExp,
+  MultExp_multExp,
+  MultExp_divExp
 }
 
 let runFunction = async (exp) => {

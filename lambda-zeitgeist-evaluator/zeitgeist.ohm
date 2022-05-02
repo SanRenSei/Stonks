@@ -24,6 +24,10 @@ Zeitgeist {
 
   ArithExp = SeriesName "+" SeriesName --addExp
     | SeriesName "-" SeriesName --subtrExp
+    | MultExp
+
+  MultExp = SeriesName "*" SeriesName --multExp
+    |  SeriesName "/" SeriesName --divExp
 
   SeriesName = SeriesChar+
 
