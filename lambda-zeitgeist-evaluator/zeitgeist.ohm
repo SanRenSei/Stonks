@@ -18,16 +18,23 @@ Zeitgeist {
   OutPeriodExp = "OutPeriod" MomentRange
     | "OutPeriod" MomentConst
 
-  ExportExp = "Export" SeriesName
+  ExportExp = "Export" ZeitMultiExp
+
+  ZeitMultiExp = ZeitExp ("," ZeitExp)*
 
   ZeitExp = ArithExp
 
-  ArithExp = SeriesName "+" SeriesName --addExp
-    | SeriesName "-" SeriesName --subtrExp
+  ArithExp = OffsetExp "+" OffsetExp --addExp
+    | OffsetExp "-" OffsetExp --subtrExp
     | MultExp
 
-  MultExp = SeriesName "*" SeriesName --multExp
-    |  SeriesName "/" SeriesName --divExp
+  MultExp = OffsetExp "*" OffsetExp --multExp
+    |  OffsetExp "/" OffsetExp --divExp
+    | OffsetExp
+
+  OffsetExp = SeriesName "[" ConstNum "]" --offsetExp
+    | SeriesName
+    | Const
 
   SeriesName = SeriesChar+
 

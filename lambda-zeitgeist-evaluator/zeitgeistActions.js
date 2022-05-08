@@ -10,8 +10,8 @@ function DefineExp(arg0, arg1) {
 async function ExportExp(arg0) {
   for (let i=zStore.getOutPeriodStart();i<zStore.getOutPeriodEnd();i=dateArithmetic.getNextDate(i)) {
     zStore.setMomentPointer(i);
-    let result = await expressionEval(arg0);
-    console.log(`${i} ${result}`);
+    let result = await Promise.all(arg0.map(exp => expressionEval(exp)));
+    console.log(`${i},${result}`);
   }
 }
 
