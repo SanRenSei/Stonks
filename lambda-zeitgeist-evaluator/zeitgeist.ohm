@@ -5,6 +5,7 @@ Zeitgeist {
   Exp = LoadExp ";" --loadExp
     | DefineExp ";" --defineExp
     | InPeriodExp ";" --inPeriodExp
+    | FillExp ";" --fillExp
     | OutPeriodExp ";" --outPeriodExp
     | ExportExp ";" --exportExp
 
@@ -14,6 +15,8 @@ Zeitgeist {
 
   InPeriodExp = "InPeriod" MomentRange
     | "InPeriod" MomentConst
+
+  FillExp = "🚰" SeriesName
 
   OutPeriodExp = "OutPeriod" MomentRange
     | "OutPeriod" MomentConst
@@ -48,6 +51,7 @@ Zeitgeist {
 
   MomentConst = "⌛" ConstNum
 
-  ConstNum = digit+
+  ConstNum = "-" digit+ --neg
+    | digit+ --pos
 
 }

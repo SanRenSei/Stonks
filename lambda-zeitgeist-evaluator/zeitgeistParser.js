@@ -16,6 +16,7 @@ function evaluate(input) {
     ArithExp_subtrExp: {arg0: 0, arg1: 2},
     DefineExp: {arg0: 1, arg1: 3},
     ExportExp: {arg0: 1},
+    FillExp: {arg0: 1},
     InPeriodExp: {arg0: 1},
     LoadExp: {arg0: 1},
     MomentConst: {arg0: 1},
@@ -28,7 +29,8 @@ function evaluate(input) {
       return [arg1.toAST(mapping), ...arg3.toAST(mapping)];
     },
     SeriesName: (arr) => arr.source.sourceString.substring(arr.source.startIdx, arr.source.endIdx),
-    ConstNum: (arr) => parseInt(arr.source.sourceString.substring(arr.source.startIdx, arr.source.endIdx))
+    ConstNum_neg: (_, arr) => -parseInt(arr.source.sourceString.substring(arr.source.startIdx, arr.source.endIdx)),
+    ConstNum_pos: (arr) => parseInt(arr.source.sourceString.substring(arr.source.startIdx, arr.source.endIdx))
   }
   return toAST(grammarMatch, mapping);
 }

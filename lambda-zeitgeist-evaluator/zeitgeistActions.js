@@ -15,6 +15,21 @@ async function ExportExp(arg0) {
   }
 }
 
+function FillExp(arg0) {
+  if (typeof(arg0)=='string') {
+    let start = zStore.getInPeriodStart();
+    let end = zStore.getInPeriodEnd();
+    let lastVal = 0;
+    for (let i=start;i<end;i=dateArithmetic.getNextDate(i)) {
+      if (!zStore.getData(arg0, i)) {
+        zStore.addData(arg0, i, lastVal);
+      } else {
+        lastVal = zStore.getData(arg0, i);
+      }
+    }
+  }
+}
+
 function InPeriodExp(arg0) {
   if (arg0.type=='MomentRange') {
     let momentRange = MomentRange(arg0.arg0, arg0.arg1);
@@ -55,6 +70,7 @@ function OutPeriodExp(arg0) {
 module.exports = {
   DefineExp,
   ExportExp,
+  FillExp,
   InPeriodExp,
   LoadExp,
   MomentRange,
