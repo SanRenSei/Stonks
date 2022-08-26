@@ -16,7 +16,7 @@ Zeitgeist {
   InPeriodExp = "InPeriod" MomentRange
     | "InPeriod" MomentConst
 
-  FillExp = "🚰" SeriesName
+  FillExp = "🚰" MultiSeriesName
 
   OutPeriodExp = "OutPeriod" MomentRange
     | "OutPeriod" MomentConst
@@ -31,13 +31,18 @@ Zeitgeist {
     | OffsetExp "-" OffsetExp --subtrExp
     | MultExp
 
-  MultExp = OffsetExp "*" OffsetExp --multExp
-    |  OffsetExp "/" OffsetExp --divExp
+  MultExp = ArrayExp "*" ArrayExp --multExp
+    |  ArrayExp "/" ArrayExp --divExp
+    | ArrayExp
+
+  ArrayExp = OffsetExp ":" OffsetExp -- arrayExp
     | OffsetExp
 
-  OffsetExp = SeriesName "[" ConstNum "]" --offsetExp
+  OffsetExp = SeriesName "[" ArrayExp "]" --offsetExp
     | SeriesName
     | Const
+
+  MultiSeriesName = SeriesName ("," SeriesName)*
 
   SeriesName = SeriesChar+
 

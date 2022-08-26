@@ -14,6 +14,7 @@ function evaluate(input) {
   let mapping = {
     ArithExp_addExp: {arg0: 0, arg1: 2},
     ArithExp_subtrExp: {arg0: 0, arg1: 2},
+    ArrayExp_arrayExp: {arg0: 0, arg1: 2},
     DefineExp: {arg0: 1, arg1: 3},
     ExportExp: {arg0: 1},
     FillExp: {arg0: 1},
@@ -23,6 +24,9 @@ function evaluate(input) {
     MomentRange: {arg0: 0, arg1: 2},
     MultExp_multExp: {arg0: 0, arg1: 2},
     MultExp_divExp: {arg0: 0, arg1: 2},
+    MultiSeriesName: (arg1, arg2, arg3) => {
+      return [arg1.toAST(mapping), ...arg3.toAST(mapping)];
+    },
     OffsetExp_offsetExp: {arg0: 0, arg1: 2},
     OutPeriodExp: {arg0: 1},
     ZeitMultiExp: (arg1, arg2, arg3) => {

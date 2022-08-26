@@ -28,6 +28,9 @@ function FillExp(arg0) {
       }
     }
   }
+  if (Array.isArray(arg0)) {
+    arg0.forEach(seq => FillExp(seq));
+  }
 }
 
 function InPeriodExp(arg0) {
@@ -47,6 +50,7 @@ async function LoadExp(arg0) {
     let start = zStore.getInPeriodStart();
     let end = zStore.getInPeriodEnd();
     await dataloader(arg0, start, end);
+    zStore.setSequencePointer(arg0);
   }
 }
 

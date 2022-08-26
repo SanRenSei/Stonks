@@ -17,11 +17,34 @@ function MultExp_divExp(arg0, arg1) {
   return evalExpr(arg0) / evalExpr(arg1);
 }
 
+function ArrayExp_arrayExp(arg0, arg1) {
+  let toReturn = [];
+  let start = evalExpr(arg0);
+  let end = evalExpr(arg1);
+  while (start<=end) {
+    toReturn.push(start);
+    start++;
+  }
+  return toReturn;
+}
+
 function OffsetExp_offsetExp(arg0, arg1) {
-  let currentDate = zStore.getMomentPointer();
-  let offsetDate = dateArithmetic.subtractDays(currentDate, arg1);
-  let returnValue = zStore.getData(arg0, offsetDate);
-  return zStore.getData(arg0, offsetDate);
+  let offsetIndex = evalExpr(arg1);
+  if (typeof(offsetIndex)=='number') {
+    let currentDate = zStore.getMomentPointer();
+    let offsetDate = dateArithmetic.subtractDays(currentDate, offsetIndex);
+    let returnValue = zStore.getData(arg0, offsetDate);
+    return zStore.getData(arg0, offsetDate);
+  }
+  if (Array.isArray(offsetIndex)) {
+    return offsetIndex.map(i => {
+      let currentDate = zStore.getMomentPointer();
+      let offsetDate = dateArithmetic.subtractDays(currentDate, i);
+      let returnValue = zStore.getData(arg0, offsetDate);
+      return zStore.getData(arg0, offsetDate);
+    });
+  }
+  return null;
 }
 
 let functions = {
@@ -29,6 +52,7 @@ let functions = {
   ArithExp_subtrExp,
   MultExp_multExp,
   MultExp_divExp,
+  ArrayExp_arrayExp,
   OffsetExp_offsetExp
 }
 
