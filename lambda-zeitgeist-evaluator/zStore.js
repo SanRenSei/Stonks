@@ -7,6 +7,7 @@ let momentPointer = null;
 let sequencePointer = '';
 let loadedData = {};
 let definitions = {};
+let scopedVars = [{}];
 
 
 let getInPeriodStart = () => inPeriodStart;
@@ -74,6 +75,27 @@ let getDefinition = (label) => {
   return definitions[label];
 }
 
+let storeLocalVar = (varName, varVal) => {
+  let finalLayer = scopedVars[scopedVars.length-1];
+  finalLayer[varName] = varVal;
+}
+
+let getLocalVar = (varName) => {
+  for (let i=scopedVars.length-1;i>=0;i--) {
+    if (scopedVars[i][varName]!=null) {
+      return scopedVars[i][varName];
+    }
+  }
+}
+
+let scopePush = () => {
+  scopedVars[scopedVars.length] = {};
+}
+
+let scopePop = () => {
+  scopedVars.splice(scopedVars.length-1, 1);
+}
+
 module.exports = {
   addData,
   addDefinition,
@@ -92,5 +114,9 @@ module.exports = {
   setMomentPointer,
   setSequencePointer,
   setInPeriod,
-  setOutPeriod
+  setOutPeriod,
+  storeLocalVar,
+  getLocalVar,
+  scopePush,
+  scopePop
 };

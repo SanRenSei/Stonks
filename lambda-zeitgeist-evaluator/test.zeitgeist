@@ -4,7 +4,9 @@ Load SPY;
 Define DIFF=CLOSE-OPEN[1];
 Define HGT=HIGH/LOW;
 
+Assign period = 5;
+
 🚰 OPEN, LOW, HIGH, CLOSE;
 
 OutPeriod ⌛20201201 - ⌛20201231;
-Export DIFF, HGT, CLOSE[1:5];
+Export DIFF, HGT, CLOSE[1:period]/period, period;

@@ -14,7 +14,12 @@ function MultExp_multExp(arg0, arg1) {
 }
 
 function MultExp_divExp(arg0, arg1) {
-  return evalExpr(arg0) / evalExpr(arg1);
+  let leftSide = evalExpr(arg0);
+  let rightSide = evalExpr(arg1);
+  if (Array.isArray(leftSide)) {
+    return leftSide.map(lv => lv/rightSide);
+  }
+  return leftSide / rightSide;
 }
 
 function ArrayExp_arrayExp(arg0, arg1) {
@@ -75,6 +80,9 @@ let evalExpr = (expr) => {
   if (typeof(expr)=='string') {
     if (zStore.getData(expr)) {
       return zStore.getData(expr);
+    }
+    if (zStore.getLocalVar(expr)) {
+      return zStore.getLocalVar(expr);
     }
     if (zStore.getDefinition(expr)) {
       let def = zStore.getDefinition(expr);

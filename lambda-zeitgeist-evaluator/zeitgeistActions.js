@@ -3,6 +3,12 @@ let dateArithmetic = require('./dateArithmetic.js');
 let expressionEval = require('./expressionEval.js');
 let zStore = require('./zStore.js');
 
+function AssignExp(arg0, arg1) {
+  let varName = arg0;
+  let varVal = expressionEval(arg1);
+  zStore.storeLocalVar(varName, varVal);
+}
+
 function DefineExp(arg0, arg1) {
   zStore.addDefinition(arg0, arg1);
 }
@@ -72,6 +78,7 @@ function OutPeriodExp(arg0) {
 
 
 module.exports = {
+  AssignExp,
   DefineExp,
   ExportExp,
   FillExp,

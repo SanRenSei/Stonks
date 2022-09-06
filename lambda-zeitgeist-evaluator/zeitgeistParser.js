@@ -15,6 +15,7 @@ function evaluate(input) {
     ArithExp_addExp: {arg0: 0, arg1: 2},
     ArithExp_subtrExp: {arg0: 0, arg1: 2},
     ArrayExp_arrayExp: {arg0: 0, arg1: 2},
+    AssignExp: {arg0: 1, arg1: 3},
     DefineExp: {arg0: 1, arg1: 3},
     ExportExp: {arg0: 1},
     FillExp: {arg0: 1},
@@ -29,6 +30,7 @@ function evaluate(input) {
     },
     OffsetExp_offsetExp: {arg0: 0, arg1: 2},
     OutPeriodExp: {arg0: 1},
+    VarName: (arr) => arr.source.sourceString.substring(arr.source.startIdx, arr.source.endIdx),
     ZeitMultiExp: (arg1, arg2, arg3) => {
       return [arg1.toAST(mapping), ...arg3.toAST(mapping)];
     },

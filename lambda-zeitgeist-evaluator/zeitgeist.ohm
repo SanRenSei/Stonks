@@ -4,14 +4,18 @@ Zeitgeist {
 
   Exp = LoadExp ";" --loadExp
     | DefineExp ";" --defineExp
+    | AssignExp ";" --assignExp
     | InPeriodExp ";" --inPeriodExp
     | FillExp ";" --fillExp
     | OutPeriodExp ";" --outPeriodExp
+    | PrintExp ";" --printExp
     | ExportExp ";" --exportExp
 
   LoadExp = "Load" SeriesName
 
   DefineExp = "Define" SeriesName "=" ZeitExp
+
+  AssignExp = "Assign" VarName "=" ZeitExp
 
   InPeriodExp = "InPeriod" MomentRange
     | "InPeriod" MomentConst
@@ -22,6 +26,8 @@ Zeitgeist {
     | "OutPeriod" MomentConst
 
   ExportExp = "Export" ZeitMultiExp
+
+  PrintExp = "Print" ZeitExp
 
   ZeitMultiExp = ZeitExp ("," ZeitExp)*
 
@@ -40,6 +46,7 @@ Zeitgeist {
 
   OffsetExp = SeriesName "[" ArrayExp "]" --offsetExp
     | SeriesName
+    | VarName
     | Const
 
   MultiSeriesName = SeriesName ("," SeriesName)*
@@ -47,6 +54,10 @@ Zeitgeist {
   SeriesName = SeriesChar+
 
   SeriesChar = upper | "_" | "."
+
+  VarName = VarChar+
+
+  VarChar = letter | "_"
 
   Const = ConstNum --num
     | MomentConst --moment
