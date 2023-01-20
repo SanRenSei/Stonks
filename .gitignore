@@ -4,3 +4,6 @@
 **/data/
 
 .idea
+.history
+**/.env
+new-server/import
