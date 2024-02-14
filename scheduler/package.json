@@ -1,0 +1,21 @@
+{
+  "name": "scheduler",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "basic-ftp": "^5.0.4",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.0.0",
+    "node-fetch": "^3.3.2",
+    "pg": "^8.7.3",
+    "requestify": "^0.2.5",
+    "sequelize": "^6.19.0"
+  }
+}

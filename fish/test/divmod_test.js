@@ -1,0 +1,32 @@
+
+import runCode from "../Interpreter.js";
+import runtime from "../Runtime.js";
+
+runCode('2 2 +');
+console.log(runtime.stack);
+runtime.clear();
+runCode('"Hello World" "!" +');
+console.log(runtime.stack);
+runtime.clear();
+runCode('1 2 3 4 [4]');
+console.log(runtime.stack);
+runtime.clear();
+runCode('{ 2 2 + } call');
+console.log(runtime.stack);
+runtime.clear();
+runCode('2 2 { + } curry call');
+console.log(runtime.stack);
+runtime.clear();
+runCode('1234567 60 60 24 7 [4] { /mod } map swap suffix');
+console.log(runtime.stack);
+runtime.clear();
+runCode(`FUNC /mods ( num arr -- arr ) { /mod } map swap suffix ;
+1234567 60 60 24 7 [4] /mods`);
+console.log(runtime.stack);
+runtime.clear();
+runCode('"Hello World" " " /');
+console.log(runtime.stack);
+runtime.clear();
+runCode('"Hello World" "" /');
+console.log(runtime.stack);
+runtime.clear();
