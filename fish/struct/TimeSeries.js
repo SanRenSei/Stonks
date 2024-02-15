@@ -32,6 +32,10 @@ export default class TimeSeries {
     if (paramType == 'Number') {
       return this.get(Time.now().add(-param));
     }
+    if (Array.isArray(param)) {
+      return Promise.all(param.map(async p => await this.get(p)));
+    }
+    throw 'Cannot get from time series ' + param
   }
 
 }

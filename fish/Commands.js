@@ -75,15 +75,25 @@ const commands = [
   }},
   {token: 'FUNC', action: _ => {
     let tokens = [];
+    let depth = 0;
     runtime.setCommandOverride([
-      {token: ';', action: _ => {
-        runtime.removeCommandOverride();
-        let funcName = tokens.splice(0, 1)[0];
-        let func = new Invocation(tokens);
-        commands.unshift({
-          token: funcName,
-          action: async _ => await func.invoke()
-        });
+      {token: ';', action: token => {
+        if (depth == 0) {
+          runtime.removeCommandOverride();
+          let funcName = tokens.splice(0, 1)[0];
+          let func = new Invocation(tokens);
+          commands.unshift({
+            token: funcName,
+            action: async _ => await func.invoke()
+          });
+        } else {
+          tokens.push(token);
+          depth--;
+        }
+      }},
+      {token: 'ALIAS', action: token => {
+        depth++;
+        tokens.push(token);
       }},
       {regex: /.*/, action: token => tokens.push(token)}
     ]);
@@ -117,6 +127,13 @@ const commands = [
     let left = runtime.pop(); 
     runtime.push(left*right);
   }},
+  {regex: /\*\d+$/, action: async token => {
+    let loopCount = parseInt(token.substring(1));
+    let func = runtime.pop();
+    for (let i=0;i<loopCount;i++) {
+      await func.invoke();
+    }
+  }},
   {token: '/', action: _ => {
     let right = runtime.pop();
     let left = runtime.pop();
@@ -143,6 +160,14 @@ const commands = [
     let right = runtime.pop(), left = runtime.pop();
     runtime.push(left>right);
   }},
+  {token: '[a,b]', action: _ => {
+    let right = runtime.pop(), left = runtime.pop();
+    let arr = [];
+    for (let i=left;i<=right;i++) {
+      arr.push(i);
+    }
+    runtime.push(arr);
+  }},
   {token: '/mod', action: _ => {
     let divisor = runtime.pop(), product = runtime.pop();
     let quotient = Math.floor(product/divisor);
@@ -162,6 +187,12 @@ const commands = [
     func.curry(curryVal);
     runtime.push(func);
   }},
+  {regex: /drop\d+$/, action: async token => {
+    let dropCount = parseInt(token.substring(4));
+    for (let i=0;i<dropCount;i++) {
+      runtime.pop();
+    }
+  }},
   {token: 'dup', action: _ => {
     let val = runtime.pop();
     runtime.push(val);
@@ -178,13 +209,6 @@ const commands = [
       fPath.invoke();
     }
   }},
-  {regex: /loop\d+$/, action: async token => {
-    let loopCount = parseInt(token.substring(4));
-    let func = runtime.pop();
-    for (let i=0;i<loopCount;i++) {
-      await func.invoke();
-    }
-  }},
   {token: 'map', action: _ => {
     let invocation = runtime.pop(), arr = runtime.pop();
     let toReturn = [];
@@ -197,10 +221,28 @@ const commands = [
   }},
   {token: 'pop', action: _ => runtime.pop()},
   {token: 'print', action: _ => console.log(runtime.pop())},
+  {regex: /rot\d+$/, action: async token => {
+    let rotCount = parseInt(token.substring(3));
+    let item = runtime.pop();
+    let cache = [];
+    for (let i=0;i<rotCount;i++) {
+      cache.push(runtime.pop());
+    }
+    runtime.push(item);
+    for (let i=cache.length-1;i>=0;i--) {
+      runtime.push(cache[i]);
+    }
+  }},
   {token: 'suffix', action: _ => {
     let elem = runtime.pop(), arr = runtime.pop();
     arr.push(elem);
     runtime.push(arr);
+  }},
+  {token: 'sum', action: _ => {
+    let arr = runtime.pop();
+    let val = 0;
+    arr.forEach(v => val+=v);
+    runtime.push(val);
   }},
   {token: 'swap', action: _ => {
     let elem1 = runtime.pop(), elem2 = runtime.pop();
