@@ -11,6 +11,10 @@ let tokenize = (code) => {
       tokens.splice(i+1, 1);
       i--;
     }
+    if (tokens[i]=='') {
+      tokens.splice(i, 1);
+      i--;
+    }
   }
   return tokens;
 }

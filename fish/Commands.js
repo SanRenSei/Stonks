@@ -15,6 +15,10 @@ const commands = [
     }
     runtime.push(toPush);
   }},
+  {regex: /^#\d+$/, action: token => {
+    let index = parseInt(token.substring(1));
+    runtime.push(runtime.peekIndex(index));
+  }},
   {regex: /⏳.*/, action: token => {
     runtime.push(new Time(token.substring(1)));
   }},
@@ -78,7 +82,7 @@ const commands = [
         let func = new Invocation(tokens);
         commands.unshift({
           token: funcName,
-          action: _ => func.invoke()
+          action: async _ => await func.invoke()
         });
       }},
       {regex: /.*/, action: token => tokens.push(token)}
@@ -108,6 +112,11 @@ const commands = [
     let right = runtime.pop(), left = runtime.pop();
     runtime.push(left-right);
   }},
+  {token: '*', action: _ => {
+    let right = runtime.pop();
+    let left = runtime.pop(); 
+    runtime.push(left*right);
+  }},
   {token: '/', action: _ => {
     let right = runtime.pop();
     let left = runtime.pop();
@@ -120,6 +129,15 @@ const commands = [
       return;
     }
     throw 'Cannot divide';
+  }},
+  {token: '%', action: _ => {
+    let right = runtime.pop();
+    let left = runtime.pop();
+    runtime.push(left%right);
+  }},
+  {token: '=', action: _ => {
+    let right = runtime.pop(), left = runtime.pop();
+    runtime.push(left==right);
   }},
   {token: '>', action: _ => {
     let right = runtime.pop(), left = runtime.pop();
@@ -136,6 +154,9 @@ const commands = [
     let func = runtime.pop();
     func.invoke();
   }},
+  {token: 'ceil', action: _ => {
+    runtime.push(Math.ceil(runtime.pop()));
+  }},
   {token: 'curry', action: _ => {
     let func = runtime.pop(), curryVal = runtime.pop();
     func.curry(curryVal);
@@ -145,6 +166,24 @@ const commands = [
     let val = runtime.pop();
     runtime.push(val);
     runtime.push(val);
+  }},
+  {token: 'floor', action: _ => {
+    runtime.push(Math.floor(runtime.pop()));
+  }},
+  {token: 'if', action: _ => {
+    let fPath = runtime.pop(), tPath = runtime.pop(), pred = runtime.pop();
+    if (pred) {
+      tPath.invoke();
+    } else {
+      fPath.invoke();
+    }
+  }},
+  {regex: /loop\d+$/, action: async token => {
+    let loopCount = parseInt(token.substring(4));
+    let func = runtime.pop();
+    for (let i=0;i<loopCount;i++) {
+      await func.invoke();
+    }
   }},
   {token: 'map', action: _ => {
     let invocation = runtime.pop(), arr = runtime.pop();

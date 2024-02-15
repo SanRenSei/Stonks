@@ -15,12 +15,12 @@ export default class Invocation {
     this.curries.unshift(value);
   }
 
-  invoke() {
+  async invoke() {
     for (let i=0;i<this.curries.length;i++) {
       runtime.push(this.curries[i]);
     }
     for (let i=0;i<this.tokens.length;i++) {
-      runtime.executeToken(this.tokens[i]);
+      await runtime.executeToken(this.tokens[i]);
     }
   }
 

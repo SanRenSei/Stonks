@@ -22,6 +22,10 @@ class Runtime {
     }
   }
 
+  peekIndex(index) {
+    return this.stack[this.stack.length-1-index];
+  }
+
   push(val) {
     this.stack.push(val);
   }
