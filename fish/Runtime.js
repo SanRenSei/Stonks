@@ -52,8 +52,20 @@ class Runtime {
   }
 
   async executeToken(token) {
-    let action = getMatchingCommand(token, this.commandOverride).action;
-    await action(token);
+    let command = getMatchingCommand(token, this.commandOverride);
+    if (command.action) {
+      let action = command.action;
+      await action(token);
+      return;
+    }
+    if (command.code) {
+      let tokens = command.code.split(' ');
+      for (let i=0;i<tokens.length;i++) {
+        await this.executeToken(tokens[i]);
+      }
+      return;
+    }
+    throw 'Badly configured token: ' + token;
   }
 
 }

@@ -168,6 +168,9 @@ const commands = [
     }
     runtime.push(arr);
   }},
+  {token: '][', action: _ => {
+    runtime.pop().forEach(i => runtime.push(i));
+  }},
   {token: '/mod', action: _ => {
     let divisor = runtime.pop(), product = runtime.pop();
     let quotient = Math.floor(product/divisor);
@@ -209,12 +212,12 @@ const commands = [
       fPath.invoke();
     }
   }},
-  {token: 'map', action: _ => {
+  {token: 'map', action: async _ => {
     let invocation = runtime.pop(), arr = runtime.pop();
     let toReturn = [];
     for (let i=0;i<arr.length;i++) {
       runtime.push(arr[i]);
-      invocation.invoke();
+      await invocation.invoke();
       toReturn[i] = runtime.pop();
     }
     runtime.push(toReturn);
@@ -232,6 +235,19 @@ const commands = [
     for (let i=cache.length-1;i>=0;i--) {
       runtime.push(cache[i]);
     }
+  }},
+  {token: 'subpairs', code: '2 subseqs'},
+  {token: 'subseqs', action: _ => {
+    let windowSize = runtime.pop(), arr = runtime.pop();
+    let toPush = [];
+    for (let i=0;i<=arr.length-windowSize;i++) {
+      let elem = [];
+      for (let j=i;j<i+windowSize;j++) {
+        elem.push(arr[j]);
+      }
+      toPush.push(elem);
+    }
+    runtime.push(toPush);
   }},
   {token: 'suffix', action: _ => {
     let elem = runtime.pop(), arr = runtime.pop();
