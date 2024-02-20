@@ -1,4 +1,8 @@
 
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+dayjs.extend(customParseFormat);
+
 import getMatchingCommand from "./Commands.js";
 import runtime from "./Runtime.js";
 import Invocation from "./struct/Invocation.js";

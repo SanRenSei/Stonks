@@ -1,7 +1,5 @@
 
 import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat.js';
-dayjs.extend(customParseFormat);
 
 const toBusinessDay = (t) => {
   if (t.day() == 0) { // Sunday
@@ -33,6 +31,14 @@ export default class Time {
   static now() {
     let currentDate = toBusinessDay(dayjs());
     return new Time(currentDate.format('YYYYMMDD'));
+  }
+
+  clone() {
+    return new Time(this.start);
+  }
+
+  withAdd(timesteps) {
+    return this.clone().add(timesteps);
   }
 
   add(timesteps) {

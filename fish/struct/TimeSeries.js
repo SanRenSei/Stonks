@@ -6,6 +6,7 @@ export default class TimeSeries {
     this.name = '';
     this.dataValues = {};
     this.dataRetrievalFn = async (timestamp) => {}
+    this.NULL_LOOKBACK_DIST = 10;
   }
 
   toString() {
@@ -25,6 +26,13 @@ export default class TimeSeries {
       if (this.dataValues[index]) {
         return this.dataValues[index];
       }
+      let lookbackDate = param.clone();
+      for (let i=0;i<this.NULL_LOOKBACK_DIST;i++) {
+        lookbackDate.add(-1);
+        if (this.dataValues[lookbackDate.start]) {
+          return this.dataValues[lookbackDate.start];
+        }
+      }
       let dataLoad = await this.dataRetrievalFn(index);
       this.loadData(dataLoad);
       return this.dataValues[index];
@@ -33,9 +41,14 @@ export default class TimeSeries {
       return this.get(Time.now().add(-param));
     }
     if (Array.isArray(param)) {
-      return Promise.all(param.map(async p => await this.get(p)));
+      let toReturn = [];
+      for (let i=0;i<param.length;i++) {
+        let val = await this.get(param[i]);
+        toReturn.push(val);
+      }
+      return toReturn;
     }
-    throw 'Cannot get from time series ' + param
+    throw 'Cannot get from time series ' + paramType + ' ' + param
   }
 
 }

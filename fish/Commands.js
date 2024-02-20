@@ -2,6 +2,7 @@
 import runtime from "./Runtime.js";
 import DataSourceProvider from "./datasources/DataSourceProvider.js";
 import Invocation from "./struct/Invocation.js";
+import Placeholder from "./struct/Placeholder.js";
 import Time from "./struct/Time.js";
 
 const commands = [
@@ -25,12 +26,30 @@ const commands = [
   {regex: /📚.*/, action: async token => {
     let dataSource = await DataSourceProvider.createDataObject(token.substring(2));
     runtime.push(dataSource);
-  }}, 
+  }},
+  {token: '🐞', action: _ => {
+    console.log('===== STACK DEBUG START =====')
+    console.log(runtime.stack)
+    console.log('===== STACK DEBUG END =====')
+  }},
   {token: '(', action: _ => {
     runtime.setCommandOverride([
       {token: ')', action: _ => runtime.removeCommandOverride()},
       {regex: /.*/, action: _ => {}}
     ]);
+  }},
+  {token: '[', action: _ => {
+    let placeholder = new Placeholder();
+    runtime.push(placeholder);
+  }},
+  {token: ']', action: _ => {
+    let arr = [];
+    let val = runtime.pop();
+    while (!(val instanceof Placeholder)) {
+      arr.unshift(val);
+      val = runtime.pop();
+    }
+    runtime.push(arr);
   }},
   {token: '{', action: _ => {
     let nesting = 1;
@@ -115,7 +134,11 @@ const commands = [
   } },
   {token: '+', action: _ => {
     let right = runtime.pop();
-    let left = runtime.pop(); 
+    let left = runtime.pop();
+    if (Array.isArray(left) && right.constructor.name=='Number') {
+      runtime.push(left.map(e => e+right));
+      return;
+    }
     runtime.push(left+right);
   }},
   {token: '-', action: _ => {
@@ -160,6 +183,15 @@ const commands = [
     let right = runtime.pop(), left = runtime.pop();
     runtime.push(left>right);
   }},
+  {token: '[0,b)', code: '0 swap [a,b)'},
+  {token: '[a,b)', action: _ => {
+    let right = runtime.pop(), left = runtime.pop();
+    let arr = [];
+    for (let i=left;i<right;i++) {
+      arr.push(i);
+    }
+    runtime.push(arr);
+  }},
   {token: '[a,b]', action: _ => {
     let right = runtime.pop(), left = runtime.pop();
     let arr = [];
@@ -178,16 +210,40 @@ const commands = [
     runtime.push(quotient);
     runtime.push(remainder);
   }},
-  {token: 'call', action: _ => {
+  {token: 'call', action: async _ => {
     let func = runtime.pop();
-    func.invoke();
+    await func.invoke();
   }},
   {token: 'ceil', action: _ => {
     runtime.push(Math.ceil(runtime.pop()));
   }},
+  {token: 'cond', action: async _ => {
+    let conditions = runtime.pop();
+    for (let i=0;i<conditions.length;i++) {
+      if (conditions[i] instanceof Invocation) {
+        await conditions[i].invoke();
+        return;
+      }
+      let predicate = conditions[i][0], func = conditions[i][1];
+      await predicate.invoke();
+      let result = runtime.pop();
+      if (result) {
+        await func.invoke();
+        return;
+      }
+    }
+  }},
   {token: 'curry', action: _ => {
     let func = runtime.pop(), curryVal = runtime.pop();
     func.curry(curryVal);
+    runtime.push(func);
+  }},
+  {regex: /curry\d+$/, action: async token => {
+    let func = runtime.pop();
+    let curryCount = parseInt(token.substring(5));
+    for (let i=0;i<curryCount;i++) {
+      func.curry(runtime.pop());
+    }
     runtime.push(func);
   }},
   {regex: /drop\d+$/, action: async token => {
@@ -212,6 +268,12 @@ const commands = [
       fPath.invoke();
     }
   }},
+  {token: 'isArray', action: _ => {
+    runtime.push(Array.isArray(runtime.pop()));
+  }},
+  {token: 'isTime', action: _ => {
+    runtime.push(runtime.pop() instanceof Time);
+  }},
   {token: 'map', action: async _ => {
     let invocation = runtime.pop(), arr = runtime.pop();
     let toReturn = [];
@@ -224,7 +286,7 @@ const commands = [
   }},
   {token: 'pop', action: _ => runtime.pop()},
   {token: 'print', action: _ => console.log(runtime.pop())},
-  {regex: /rot\d+$/, action: async token => {
+  {regex: /^rot\d+$/, action: async token => {
     let rotCount = parseInt(token.substring(3));
     let item = runtime.pop();
     let cache = [];
@@ -269,6 +331,14 @@ const commands = [
     let index = runtime.pop(), array = runtime.pop();
     let val = await array.get(index);
     runtime.push(val);
+  }},
+  {regex: /uprot\d+$/, action: token => {
+    let uprotCount = parseInt(token.substring(5));
+    let item = runtime.pop();
+    for (let i=0;i<uprotCount;i++) {
+      runtime.pop();
+    }
+    runtime.push(item);
   }},
   {token: 'while', action: _ => {
     let func = runtime.pop(), pred = runtime.pop();

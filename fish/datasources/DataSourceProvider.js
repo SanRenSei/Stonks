@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 
 import TimeSeries from "../struct/TimeSeries.js";
@@ -11,10 +12,12 @@ export default class DataSourceProvider {
     let toReturn = new TimeSeries();
     toReturn.name = dataId;
     toReturn.dataRetrievalFn = async (timestamp) => {
+      let sixMonthBack = dayjs(timestamp, 'YYYYMMDD').add(-6, 'month').format('YYYYMMDD'), 
+        sixMonthForward = dayjs(timestamp, 'YYYYMMDD').add(6, 'month').format('YYYYMMDD');
       let data = await Sequences.findAll({
         attributes: ['Date', 'Name', 'Value', 'StrValue'],
         where: {
-          Date: { [Op.gte]: parseInt(timestamp.substring(0,4)+'0101'), [Op.lte]: parseInt(timestamp.substring(0,4)+'1231') },
+          Date: { [Op.gte]: parseInt(sixMonthBack), [Op.lte]: parseInt(sixMonthForward) },
           [Op.or]: [
             { Name: { [Op.eq]: dataId } },
             { Name: { [Op.startsWith]: dataId+'.' } }
