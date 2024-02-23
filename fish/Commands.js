@@ -29,8 +29,11 @@ const commands = [
   }},
   {token: '🐞', action: _ => {
     console.log('===== STACK DEBUG START =====')
-    console.log(runtime.stack)
+    console.dir(runtime.stack, {depth:null})
     console.log('===== STACK DEBUG END =====')
+  }},
+  {token: '🧹', action: _ => {
+    runtime.clear();
   }},
   {token: '(', action: _ => {
     runtime.setCommandOverride([
@@ -139,6 +142,10 @@ const commands = [
       runtime.push(left.map(e => e+right));
       return;
     }
+    if (Array.isArray(right) && left.constructor.name=='Number') {
+      runtime.push(right.map(e => e+left));
+      return;
+    }
     runtime.push(left+right);
   }},
   {token: '-', action: _ => {
@@ -245,6 +252,24 @@ const commands = [
       func.curry(runtime.pop());
     }
     runtime.push(func);
+  }},
+  {token: 'deepMap', action: async _ => {
+    let deepMap = async (deepArr, invocation) => {
+      if (Array.isArray(deepArr)) {
+        let toReturn = [];
+        for (let i=0;i<deepArr.length;i++) {
+          toReturn.push(await deepMap(deepArr[i], invocation));
+        }
+        return toReturn;
+      }
+      return await invocation(deepArr);
+    };
+    let func = runtime.pop(), arr = runtime.pop();
+    runtime.push(await deepMap(arr, async val => {
+      runtime.push(val);
+      await func.invoke();
+      return runtime.pop();
+    }));
   }},
   {regex: /drop\d+$/, action: async token => {
     let dropCount = parseInt(token.substring(4));
