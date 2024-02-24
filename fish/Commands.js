@@ -217,6 +217,9 @@ const commands = [
     runtime.push(quotient);
     runtime.push(remainder);
   }},
+  {token: 'abs', action: _ => {
+    runtime.push(Math.abs(runtime.pop()));
+  }},
   {token: 'call', action: async _ => {
     let func = runtime.pop();
     await func.invoke();
@@ -308,6 +311,18 @@ const commands = [
       toReturn[i] = runtime.pop();
     }
     runtime.push(toReturn);
+  }},
+  {token: 'maximum', action: _ => {
+    let arr = runtime.pop();
+    let val = arr[0];
+    arr.forEach(v => val=Math.max(val, v));
+    runtime.push(val);
+  }},
+  {token: 'minimum', action: _ => {
+    let arr = runtime.pop();
+    let val = arr[0];
+    arr.forEach(v => val=Math.min(val, v));
+    runtime.push(val);
   }},
   {token: 'pop', action: _ => runtime.pop()},
   {token: 'print', action: _ => console.log(runtime.pop())},
