@@ -24,8 +24,17 @@ const commands = [
     runtime.push(new Time(token.substring(1)));
   }},
   {regex: /📚.*/, action: async token => {
-    let dataSource = await DataSourceProvider.createDataObject(token.substring(2));
+    let sourceName = token.substring(2);
+    if (sourceName=='') {
+      sourceName = runtime.pop();
+    }
+    let dataSource = await DataSourceProvider.createDataObject(sourceName);
     runtime.push(dataSource);
+  }},
+  {token: '🌌', action: async _ => {
+    let timeseries = runtime.pop();
+    await timeseries.fetchAllData();
+    runtime.push(timeseries);
   }},
   {token: '🐞', action: _ => {
     console.log('===== STACK DEBUG START =====')

@@ -6,6 +6,8 @@ export default class TimeSeries {
     this.name = '';
     this.dataValues = {};
     this.dataRetrievalFn = async (timestamp) => {}
+    this.fetchAllFn = async (timestamp) => {}
+    this.fetchedAll = false;
     this.NULL_LOOKBACK_DIST = 10;
   }
 
@@ -17,6 +19,12 @@ export default class TimeSeries {
     dataObj.forEach(data => {
       this.dataValues[data.timestamp] = data.value;
     });
+  }
+
+  async fetchAllData() {
+    let allData = await this.fetchAllFn();
+    this.loadData(allData);
+    this.fetchedAll = true;
   }
 
   async get(param) {
@@ -32,6 +40,9 @@ export default class TimeSeries {
         if (this.dataValues[lookbackDate.start]) {
           return this.dataValues[lookbackDate.start];
         }
+      }
+      if (this.fetchedAll) {
+        return NaN;
       }
       let dataLoad = await this.dataRetrievalFn(index);
       this.loadData(dataLoad);

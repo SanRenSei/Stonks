@@ -28,6 +28,20 @@ export default class DataSourceProvider {
         return {timestamp: d.Date, value: d.Value}
       });
     }
+    toReturn.fetchAllFn = async () => {
+      let data = await Sequences.findAll({
+        attributes: ['Date', 'Name', 'Value', 'StrValue'],
+        where: {
+          [Op.or]: [
+            { Name: { [Op.eq]: dataId } },
+            { Name: { [Op.startsWith]: dataId+'.' } }
+          ]
+        }
+      });
+      return data.map(d => {
+        return {timestamp: d.Date, value: d.Value}
+      });
+    }
     return toReturn;
   }
 

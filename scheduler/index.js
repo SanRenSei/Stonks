@@ -13,7 +13,7 @@ const run = async () => {
   //await nasdaqFtper();
   //updateList();
   //datamineStock();
-  setInterval(datamineStock, 1000*60*3);
+  setInterval(datamineStock, 1000*60);
 }
 
 run();
