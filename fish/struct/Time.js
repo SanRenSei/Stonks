@@ -24,8 +24,14 @@ const reverseToBusinessDay = (t) => {
 export default class Time {
 
   constructor(timestamp) {
-    this.start = timestamp;
-    this.end = timestamp;
+    let timestamps = timestamp.split('-');
+    if (timestamps.length==1) {
+      this.start = timestamps[0];
+      this.end = timestamps[0];
+    } else {
+      this.start = timestamps[0];
+      this.end = timestamps[1];
+    }
   }
 
   static now() {

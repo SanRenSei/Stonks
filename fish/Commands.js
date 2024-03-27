@@ -233,6 +233,23 @@ const commands = [
     let func = runtime.pop();
     await func.invoke();
   }},
+  {regex: /callMap\d+$/, action: async token => {
+    let funcList = runtime.pop();
+    let callMapCount = parseInt(token.substring(7));
+    let params = [];
+    for (let i=callMapCount-1;i>=0;i--) {
+      params[i] = runtime.pop();
+    }
+    let results = [];
+    for (let i=0;i<funcList.length;i++) {
+      for (let j=0;j<callMapCount;j++) {
+        runtime.push(params[j]);
+      }
+      await funcList[i].invoke();
+      results[i] = runtime.pop();
+    }
+    runtime.push(results);
+  }},
   {token: 'ceil', action: _ => {
     runtime.push(Math.ceil(runtime.pop()));
   }},
