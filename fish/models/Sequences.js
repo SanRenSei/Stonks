@@ -26,6 +26,7 @@ Sequences.init(
   {
     sequelize: connection,
     modelName: 'sequences',
+    timestamps: false
   }
 );
 

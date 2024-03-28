@@ -5,8 +5,11 @@ import Invocation from "./struct/Invocation.js";
 import Placeholder from "./struct/Placeholder.js";
 import Time from "./struct/Time.js";
 
+import stratRun from "./commands/stratRun.js";
+
 const commands = [
   {regex: /^\d+$/, action: token => runtime.push(parseInt(token))},
+  {regex: /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/, action: token => runtime.push(parseFloat(token))},
   {regex: /^\"[^\"]*\"$/, action: token => runtime.push(token.substring(1, token.length-1))},
   {regex: /^\[\d+\]$/, action: token => {
     let arrLen = parseInt(token.substring(1, token.length-1));
@@ -38,7 +41,7 @@ const commands = [
   }},
   {token: '🐞', action: _ => {
     console.log('===== STACK DEBUG START =====')
-    console.dir(runtime.stack, {depth:null})
+    console.dir(runtime.stack, {depth:2})
     console.log('===== STACK DEBUG END =====')
   }},
   {token: '🧹', action: _ => {
@@ -159,6 +162,10 @@ const commands = [
   }},
   {token: '-', action: _ => {
     let right = runtime.pop(), left = runtime.pop();
+    if (left instanceof Time && Array.isArray(right)) {
+      runtime.push(right.map(d => left.withAdd(-d)));
+      return;
+    }
     runtime.push(left-right);
   }},
   {token: '*', action: _ => {
@@ -364,6 +371,7 @@ const commands = [
       runtime.push(cache[i]);
     }
   }},
+  {token: 'strat-run', action: stratRun},
   {token: 'subpairs', code: '2 subseqs'},
   {token: 'subseqs', action: _ => {
     let windowSize = runtime.pop(), arr = runtime.pop();

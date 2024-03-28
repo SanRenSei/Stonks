@@ -13,7 +13,11 @@ const run = async () => {
   //await nasdaqFtper();
   //updateList();
   //datamineStock();
-  setInterval(datamineStock, 1000*60);
+  let func = async () => {
+    await datamineStock();
+    setTimeout(func, 1000*60);
+  }
+  func();
 }
 
 run();

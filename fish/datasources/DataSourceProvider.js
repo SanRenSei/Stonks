@@ -18,10 +18,7 @@ export default class DataSourceProvider {
         attributes: ['Date', 'Name', 'Value', 'StrValue'],
         where: {
           Date: { [Op.gte]: parseInt(sixMonthBack), [Op.lte]: parseInt(sixMonthForward) },
-          [Op.or]: [
-            { Name: { [Op.eq]: dataId } },
-            { Name: { [Op.startsWith]: dataId+'.' } }
-          ]
+          Name: { [Op.eq]: dataId }
         }
       });
       return data.map(d => {
@@ -31,12 +28,7 @@ export default class DataSourceProvider {
     toReturn.fetchAllFn = async () => {
       let data = await Sequences.findAll({
         attributes: ['Date', 'Name', 'Value', 'StrValue'],
-        where: {
-          [Op.or]: [
-            { Name: { [Op.eq]: dataId } },
-            { Name: { [Op.startsWith]: dataId+'.' } }
-          ]
-        }
+        where: {Name: { [Op.eq]: dataId }}
       });
       return data.map(d => {
         return {timestamp: d.Date, value: d.Value}

@@ -47,7 +47,7 @@ const updateDatabase = async (symbol, data) => {
     toInsert.push({Date: parseInt(d.date), Name: `${symbol}.VOLUME`, Value: parseFloat(d.volume)});
   });
 
-  await Sequences.destroy({ where: { Name: { [Op.like]: `${symbol}%` } } });
+  await Sequences.destroy({ where: { Name: [`${symbol}.OPEN`, `${symbol}.LOW`, `${symbol}.HIGH`, `${symbol}.CLOSE`, `${symbol}.VOLUME`] } });
   await Sequences.bulkCreate(toInsert);
 }
 

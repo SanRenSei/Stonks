@@ -1,0 +1,1 @@
+CREATE INDEX idx_sequences_name_date ON stonks."sequences" ("Name", "Date");

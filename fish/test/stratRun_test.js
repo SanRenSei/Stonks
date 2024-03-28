@@ -34,5 +34,13 @@ FUNC volatility ( arr -- val )
 "DDD.CLOSE" 📚 🌌 series-to-fn ALIAS ticker ;
 ticker 20 sma ALIAS sma-20 ;
 ticker 40 sma ALIAS sma-40 ;
+
+FUNC sma-cross [ sma-20 sma-40 ] callMap1 ][ > ;
+
+ticker { sma-cross } <obj> "HOLD_WHEN" <strategyType 0.1 <accountAmount ⏳20010101-20240101 strat-run "SMA_CROSS_TENTH_POSITION" <experimentName 🐞
+ticker { sma-cross } <obj> "HOLD_WHEN" <strategyType 0.25 <accountAmount ⏳20010101-20240101 strat-run "SMA_CROSS_QUART_POSITION" <experimentName 🐞
+ticker { sma-cross } <obj> "HOLD_WHEN" <strategyType 0.5 <accountAmount ⏳20010101-20240101 strat-run "SMA_CROSS_HALF_POSITION" <experimentName 🐞
+ticker { sma-cross } <obj> "HOLD_WHEN" <strategyType ⏳20010101-20240101 strat-run "SMA_CROSS_FULL_POSITION" <experimentName 🐞
+ticker { pop 1 } <obj> "HOLD_WHEN" <strategyType ⏳20010101-20240101 strat-run "BUY_AND_HOLD" <experimentName 🐞
 `);
 runtime.clear();
