@@ -34,6 +34,13 @@ const commands = [
     let dataSource = await DataSourceProvider.createDataObject(sourceName);
     runtime.push(dataSource);
   }},
+  {regex: /💾\d+_\d+/, action: token => {
+    let tokenNums = token.substring(2).split('_');
+    let numParams = tokenNums[0], numOutputs = tokenNums[1];
+    let invocation = runtime.pop();
+    invocation.enableCache(numParams, numOutputs);
+    runtime.push(invocation);
+  }},
   {token: '🌌', action: async _ => {
     let timeseries = runtime.pop();
     await timeseries.fetchAllData();
