@@ -23,10 +23,10 @@ const commands = [
     let index = parseInt(token.substring(1));
     runtime.push(runtime.peekIndex(index));
   }},
-  {regex: /⏳.*/, action: token => {
-    runtime.push(new Time(token.substring(1)));
+  {token: '🧹', action: _ => { // clean
+    runtime.clear();
   }},
-  {regex: /📚.*/, action: async token => {
+  {regex: /📚.*/, action: async token => { // datasource
     let sourceName = token.substring(2);
     if (sourceName=='') {
       sourceName = runtime.pop();
@@ -34,25 +34,37 @@ const commands = [
     let dataSource = await DataSourceProvider.createDataObject(sourceName);
     runtime.push(dataSource);
   }},
-  {regex: /💾\d+_\d+/, action: token => {
+  {token: '🐞', action: _ => { // debug
+    console.log('===== STACK DEBUG START =====')
+    console.dir(runtime.stack, {depth:2})
+    console.log('===== STACK DEBUG END =====')
+  }},
+  {regex: /🐞.*/, action: async token => { // debug
+    let debugDepth = parseInt(token.substring(2));
+    console.log(`===== STACK DEBUG START (Top ${debugDepth} of ${runtime.stack.length}) =====`)
+    for (let i=0;i<debugDepth;i++) {
+      console.log(runtime.peekIndex(i));
+    }
+    console.log('===== STACK DEBUG END =====')
+  }},
+  {token: '🌌', action: async _ => { // everything
+    let timeseries = runtime.pop();
+    await timeseries.fetchAllData();
+    runtime.push(timeseries);
+  }},
+  {token: '📏', action: async _ => { // length
+    let arrOrStr = runtime.pop();
+    runtime.push(arrOrStr.length);
+  }},
+  {regex: /⏳.*/, action: token => { // timestamp
+    runtime.push(new Time(token.substring(1)));
+  }},
+  {regex: /💾\d+_\d+/, action: token => { // save
     let tokenNums = token.substring(2).split('_');
     let numParams = tokenNums[0], numOutputs = tokenNums[1];
     let invocation = runtime.pop();
     invocation.enableCache(numParams, numOutputs);
     runtime.push(invocation);
-  }},
-  {token: '🌌', action: async _ => {
-    let timeseries = runtime.pop();
-    await timeseries.fetchAllData();
-    runtime.push(timeseries);
-  }},
-  {token: '🐞', action: _ => {
-    console.log('===== STACK DEBUG START =====')
-    console.dir(runtime.stack, {depth:2})
-    console.log('===== STACK DEBUG END =====')
-  }},
-  {token: '🧹', action: _ => {
-    runtime.clear();
   }},
   {token: '(', action: _ => {
     runtime.setCommandOverride([
@@ -209,9 +221,25 @@ const commands = [
     let right = runtime.pop(), left = runtime.pop();
     runtime.push(left==right);
   }},
+  {token: '<', action: _ => {
+    let right = runtime.pop(), left = runtime.pop();
+    runtime.push(left<right);
+  }},
+  {token: '<=', action: _ => {
+    let right = runtime.pop(), left = runtime.pop();
+    runtime.push(left<=right);
+  }},
   {token: '>', action: _ => {
     let right = runtime.pop(), left = runtime.pop();
     runtime.push(left>right);
+  }},
+  {token: '>=', action: _ => {
+    let right = runtime.pop(), left = runtime.pop();
+    runtime.push(left>=right);
+  }},
+  {token: '&', action: _ => {
+    let right = runtime.pop(), left = runtime.pop();
+    runtime.push(left && right);
   }},
   {token: '[0,b)', code: '0 swap [a,b)'},
   {token: '[a,b)', action: _ => {
@@ -325,6 +353,9 @@ const commands = [
     runtime.push(val);
     runtime.push(val);
   }},
+  {token: 'false', action: _ => {
+    runtime.push(false);
+  }},
   {token: 'floor', action: _ => {
     runtime.push(Math.floor(runtime.pop()));
   }},
@@ -412,6 +443,9 @@ const commands = [
     let index = runtime.pop(), array = runtime.pop();
     let val = await array.get(index);
     runtime.push(val);
+  }},
+  {token: 'true', action: _ => {
+    runtime.push(true);
   }},
   {regex: /uprot\d+$/, action: token => {
     let uprotCount = parseInt(token.substring(5));

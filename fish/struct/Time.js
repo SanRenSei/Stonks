@@ -72,4 +72,41 @@ export default class Time {
     return this;
   }
 
+  subtract(timesteps) {
+    this.add(-timesteps);
+    return this;
+  }
+
+  timeDiff(other) {
+    let diff = 0;
+    let currentDate = dayjs(this.start, 'YYYYMMDD');
+    let otherDate = dayjs(other.start, 'YYYYMMDD');
+    let calendarDaysDiff = currentDate.diff(otherDate);
+    while (calendarDaysDiff>7) {
+      otherDate = otherDate.add(5*Math.floor(calendarDaysDiff/7), 'day');
+      diff += 5*Math.floor(calendarDaysDiff/7);
+      calendarDaysDiff = currentDate.diff(otherDate);
+    }
+    while (calendarDaysDiff<-7) {
+      currentDate = currentDate.add(5*Math.floor(-calendarDaysDiff/7), 'day');
+      diff -= 5*Math.floor(-calendarDaysDiff/7);
+      calendarDaysDiff = currentDate.diff(otherDate);
+    }
+    while (calendarDaysDiff>1) {
+      otherDate = toBusinessDay(otherDate.add(1, 'day'));
+      diff += 1;
+      calendarDaysDiff = currentDate.diff(otherDate);
+    }
+    while (calendarDaysDiff<-1) {
+      currentDate = toBusinessDay(currentDate.add(1, 'day'));
+      diff -= 1;
+      calendarDaysDiff = currentDate.diff(otherDate);
+    }
+    return diff;
+  }
+
+  toString() {
+    return '⌛'+this.start;
+  }
+
 }

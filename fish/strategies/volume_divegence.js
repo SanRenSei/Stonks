@@ -30,17 +30,35 @@ FUNC volatility ( arr -- val )
   ] { arr swap call } map
   ][ ALIAS movement max min ;
   - / uprot1 ;
+
+FUNC up-trend-strength ( inSeries period -- { timestamp -- value} )
+  {
+    ALIAS timestamp series period ;
+    timestamp period [0,b) timestamps-delta
+    series call
+    subpairs { ][ > } map
+    dup sum swap 📏 /
+    uprot3
+  } curry2 ;
   
-"DDD.CLOSE" 📚 🌌 series-to-fn ALIAS ticker ;
-ticker 20 sma ALIAS sma-20 ;
-ticker 40 sma ALIAS sma-40 ;
+"NFLX.CLOSE" 📚 🌌 series-to-fn ALIAS ticker ;
+"NFLX.VOLUME" 📚 🌌 series-to-fn ALIAS tickerVol ;
+ticker 20 sma 💾1_1 ALIAS sma-20 ;
+ticker 20 up-trend-strength 💾1_1 ALIAS uts-20 ;
+tickerVol 20 up-trend-strength 💾1_1 ALIAS v-uts-20 ;
 
-FUNC sma-cross [ sma-20 sma-40 ] callMap1 ][ > ;
+FUNC trade-signal ( timestamp -- bool )
+  dup v-uts-20 call 0.4 <
+  #1 1 - uts-20 call 0.33 <
+  #2 uts-20 call 0.33 >=
+  & & uprot1
+  ;
 
-ticker { sma-cross } <obj> "HOLD_WHEN" <strategyType 0.1 <accountAmount ⏳20010101-20240101 strat-run "SMA_CROSS_TENTH_POSITION" <experimentName 🐞
-ticker { sma-cross } <obj> "HOLD_WHEN" <strategyType 0.25 <accountAmount ⏳20010101-20240101 strat-run "SMA_CROSS_QUART_POSITION" <experimentName 🐞
-ticker { sma-cross } <obj> "HOLD_WHEN" <strategyType 0.5 <accountAmount ⏳20010101-20240101 strat-run "SMA_CROSS_HALF_POSITION" <experimentName 🐞
-ticker { sma-cross } <obj> "HOLD_WHEN" <strategyType ⏳20010101-20240101 strat-run "SMA_CROSS_FULL_POSITION" <experimentName 🐞
-ticker { pop 1 } <obj> "HOLD_WHEN" <strategyType ⏳20010101-20240101 strat-run "BUY_AND_HOLD" <experimentName 🐞
+ticker { trade-signal } <obj> 
+  "ONSIGNAL_HOLDFOR" <strategyType 
+  0.1 <accountAmount
+  25 <holdDuration
+  false <multiplePositions
+⏳20020529-20220531 strat-run "VOL_DIV_TENTH_POSITION" <experimentName 🐞
 `);
 runtime.clear();
